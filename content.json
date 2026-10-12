@@ -424,6 +424,15 @@
         "/images/catalog/page-107.jpg",
         "/images/catalog/page-108.jpg"
       ]
+    },
+    {
+      "title": "صلب",
+      "subtitle": "KSA",
+      "category": "logos",
+      "viewer": "single",
+      "images": [
+        "/images/Artboard 2.png"
+      ]
     }
   ],
   "contact": [
