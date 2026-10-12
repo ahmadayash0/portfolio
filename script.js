@@ -193,18 +193,43 @@ function render(c) {
   startStats();
 }
 
-// ===== Tab filter =====
+// ===== Tab filter + "Show more" =====
+// How many items to show before the "Show more" button (and per tap).
+function pageSize() { return window.matchMedia('(max-width: 600px)').matches ? 6 : 10; }
+var FILTER = { cat: null, shown: 0 };
+
 function filterWork(cat, btn) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
-  var postsOnly = true, any = false;
+  FILTER.cat = cat;
+  FILTER.shown = pageSize();
+  applyFilter();
+}
+function showMore() {
+  FILTER.shown += pageSize();
+  applyFilter();
+}
+function applyFilter() {
+  var cat = FILTER.cat, count = 0, postsOnly = true;
   document.querySelectorAll('.portfolio-item').forEach(item => {
-    var show = (cat === 'all' || item.dataset.cat === cat);
-    item.style.display = show ? '' : 'none';
-    if (show) { any = true; if (!item.classList.contains('post-item')) postsOnly = false; }
+    var match = (cat === 'all' || item.dataset.cat === cat);
+    if (match) {
+      count++;
+      if (!item.classList.contains('post-item')) postsOnly = false;
+    }
+    item.style.display = (match && count <= FILTER.shown) ? '' : 'none';
   });
   // Denser grid when the tab only contains social posts
-  document.getElementById('portfolioGrid').classList.toggle('posts-mode', any && postsOnly);
+  document.getElementById('portfolioGrid').classList.toggle('posts-mode', count > 0 && postsOnly);
+
+  var wrap = document.getElementById('showMoreWrap');
+  var left = count - FILTER.shown;
+  if (left > 0) {
+    wrap.style.display = '';
+    document.getElementById('showMoreBtn').textContent = 'Show more · ' + left + ' left';
+  } else {
+    wrap.style.display = 'none';
+  }
 }
 
 // ===== Animated stat counters =====

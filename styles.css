@@ -1151,3 +1151,31 @@ img[loading="lazy"] { will-change: auto; }
   .imglightbox-prev { left: 8px; }
   .imglightbox-next { right: 8px; }
 }
+
+/* ===== "Show more" button under the portfolio grid ===== */
+.show-more-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+}
+.show-more-btn {
+  background: transparent;
+  border: 1px solid var(--neon);
+  color: var(--neon);
+  padding: 14px 34px;
+  border-radius: 30px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.show-more-btn:hover {
+  background: var(--neon);
+  color: var(--black);
+}
+@media (max-width: 600px) {
+  .show-more-wrap { margin-top: 24px; }
+  .show-more-btn { width: 100%; padding: 14px 20px; }
+}
