@@ -132,6 +132,21 @@ function render(c) {
               : viewer === 'flipbook' ? 'Flipbook'
               : p.category === 'logos' ? 'Logo' : 'View';
 
+    // Social posts: show every post directly in the grid (no folder card).
+    if (viewer === 'grid') {
+      var srcs = images.map(asset);
+      srcs.forEach(function (src, k) {
+        var post = el('div', 'portfolio-item post-item');
+        post.dataset.cat = p.category;
+        post.onclick = function () { openImgLightbox(src, srcs, k); };
+        var pt = el('div', 'portfolio-thumb');
+        pt.appendChild(img(src, (p.title || 'Post') + ' ' + (k + 1)));
+        post.appendChild(pt);
+        grid.appendChild(post);
+      });
+      return;
+    }
+
     var item = el('div', 'portfolio-item');
     item.dataset.cat = p.category;
     item.onclick = function () { openProject(id); };
@@ -182,9 +197,14 @@ function render(c) {
 function filterWork(cat, btn) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
+  var postsOnly = true, any = false;
   document.querySelectorAll('.portfolio-item').forEach(item => {
-    item.style.display = (cat === 'all' || item.dataset.cat === cat) ? '' : 'none';
+    var show = (cat === 'all' || item.dataset.cat === cat);
+    item.style.display = show ? '' : 'none';
+    if (show) { any = true; if (!item.classList.contains('post-item')) postsOnly = false; }
   });
+  // Denser grid when the tab only contains social posts
+  document.getElementById('portfolioGrid').classList.toggle('posts-mode', any && postsOnly);
 }
 
 // ===== Animated stat counters =====
@@ -284,23 +304,66 @@ function gridRender() {
     im.loading = 'lazy';
     im.decoding = 'async';
     cell.appendChild(im);
-    cell.onclick = function(){ openImgLightbox(src); };
+    cell.onclick = function(){ openImgLightbox(src, V.images, i); };
     c.appendChild(cell);
   });
   document.getElementById('viewerCounter').textContent = V.images.length + ' posts';
 }
 
-// ---- image lightbox (popped from grid) ----
-function openImgLightbox(src) {
+// ---- image lightbox (single post, with prev/next through its set) ----
+var LB = { list: [], idx: 0 };
+function openImgLightbox(src, list, idx) {
   var lb = document.getElementById('imgLightbox');
-  document.getElementById('imgLightboxImg').src = src;
+  LB.list = list || [src];
+  LB.idx = idx || 0;
+  ensureLightboxNav();
+  lbShow();
   lb.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+function lbShow() {
+  document.getElementById('imgLightboxImg').src = LB.list[LB.idx];
+  var multi = LB.list.length > 1;
+  document.querySelectorAll('.imglightbox-nav').forEach(b => b.style.display = multi ? '' : 'none');
+  var c = document.getElementById('imgLightboxCounter');
+  c.textContent = multi ? (LB.idx + 1) + ' / ' + LB.list.length : '';
+}
+function lbNav(dir) {
+  if (LB.list.length < 2) return;
+  LB.idx = (LB.idx + dir + LB.list.length) % LB.list.length;
+  lbShow();
+}
+function lbClose() {
+  document.getElementById('imgLightbox').classList.remove('active');
+  // keep page scroll locked if the big viewer is still open underneath
+  if (!document.getElementById('viewer').classList.contains('active')) document.body.style.overflow = '';
+}
+function ensureLightboxNav() {
+  var lb = document.getElementById('imgLightbox');
+  if (lb.querySelector('.imglightbox-nav')) return;
+  [[-1, 'imglightbox-prev', '\u2039', 'Previous'], [1, 'imglightbox-next', '\u203A', 'Next']].forEach(function (d) {
+    var b = el('button', 'imglightbox-nav ' + d[1], d[2]);
+    b.setAttribute('aria-label', d[3]);
+    b.onclick = function (e) { e.stopPropagation(); lbNav(d[0]); };
+    lb.appendChild(b);
+  });
+  var c = el('div', 'imglightbox-counter'); c.id = 'imgLightboxCounter';
+  lb.appendChild(c);
+  // swipe on phones
+  var x0 = null;
+  lb.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; }, { passive: true });
+  lb.addEventListener('touchend', e => {
+    if (x0 === null) return;
+    var dx = e.changedTouches[0].clientX - x0;
+    if (Math.abs(dx) > 50) lbNav(dx < 0 ? 1 : -1);
+    x0 = null;
+  }, { passive: true });
 }
 function closeImgLightbox(e) {
   // close on backdrop or close button
   if (e.target === document.getElementById('imgLightbox') ||
       e.target.classList.contains('imglightbox-close')) {
-    document.getElementById('imgLightbox').classList.remove('active');
+    lbClose();
   }
 }
 
@@ -398,7 +461,9 @@ document.addEventListener('keydown', (e) => {
   // image lightbox takes priority
   var lb = document.getElementById('imgLightbox');
   if (lb.classList.contains('active')) {
-    if (e.key === 'Escape') lb.classList.remove('active');
+    if (e.key === 'Escape') lbClose();
+    else if (e.key === 'ArrowLeft') lbNav(-1);
+    else if (e.key === 'ArrowRight') lbNav(1);
     return;
   }
   if (!document.getElementById('viewer').classList.contains('active')) return;
