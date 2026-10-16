@@ -129,7 +129,7 @@ function applyStaticText() {
   document.querySelectorAll('[data-i18n]').forEach(function (n) { n.textContent = T(n.getAttribute('data-i18n')); });
   var b = document.getElementById('langToggle');
   if (b) {
-    b.textContent = T('switch');
+    b.querySelector('.lang-label').textContent = T('switch');
     b.setAttribute('aria-label', LANG === 'ar' ? 'Switch to English' : 'التبديل إلى العربية');
     b.lang = LANG === 'ar' ? 'en' : 'ar';
   }

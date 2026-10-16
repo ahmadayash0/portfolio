@@ -1466,7 +1466,10 @@ img[loading="lazy"] { will-change: auto; }
   transition: background 0.25s, color 0.25s;
 }
 .lang-toggle:hover { background: var(--neon); color: var(--black); }
-.lang-toggle:lang(en) { font-family: 'Outfit', sans-serif; letter-spacing: 1px; }
+.lang-toggle { display: inline-flex; align-items: center; gap: 7px; }
+.lang-globe { flex: 0 0 auto; transition: transform 0.5s; }
+.lang-toggle:hover .lang-globe { transform: rotate(180deg); }
+.lang-toggle:lang(en) .lang-label { font-family: 'Outfit', sans-serif; letter-spacing: 1px; }
 @media (max-width: 600px) {
   .lang-toggle { margin-inline-start: auto; margin-inline-end: 14px; padding: 6px 12px; }
 }
@@ -1509,7 +1512,8 @@ html[dir=rtl] .viewer, html[dir=rtl] .imglightbox { direction: ltr; }
 html[dir=rtl] .viewer-meta { direction: rtl; text-align: right; }
 html[dir=rtl] .reviews-marquee { direction: ltr; }
 html[dir=rtl] .review-card { direction: rtl; }
-.rv-nav-right { display: flex; align-items: center; }
+.rv-nav-right { display: flex; align-items: center; gap: 18px; }
+.rv-nav-right .lang-toggle { margin-inline-start: 0; margin-inline-end: 0; }
 html[dir=rtl] .rv-count { align-self: flex-start; }
 /* Arabic letters need a little more size than Latin at small sizes */
 html[dir=rtl] .section-label { font-size: 14px; }

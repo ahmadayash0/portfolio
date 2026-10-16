@@ -23,7 +23,7 @@
  <body class="review-page">
   <nav>
    <a class="nav-logo" href="./" id="rvLogo">AHMAD</a>
-   <div class="rv-nav-right"><a class="rv-back" href="./" data-i18n="back">← Back to portfolio</a><button class="lang-toggle" id="langToggle" type="button" onclick="switchLang()">عربي</button></div>
+   <div class="rv-nav-right"><a class="rv-back" href="./" data-i18n="back">← Back to portfolio</a><button class="lang-toggle" id="langToggle" type="button" onclick="switchLang()"><svg class="lang-globe" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg><span class="lang-label">عربي</span></button></div>
   </nav>
 
   <main class="rv-wrap">
@@ -137,7 +137,7 @@
     document.title = T('pageTitle');
     document.querySelectorAll('[data-i18n]').forEach(function (n) { n.textContent = T(n.getAttribute('data-i18n')); });
     document.querySelectorAll('[data-i18n-ph]').forEach(function (n) { n.placeholder = T(n.getAttribute('data-i18n-ph')); });
-    var lt = document.getElementById('langToggle'); lt.textContent = T('switchTo');
+    var lt = document.getElementById('langToggle'); lt.querySelector('.lang-label').textContent = T('switchTo'); lt.setAttribute('aria-label', LANG === 'ar' ? 'Switch to English' : 'التبديل إلى العربية');
     window.switchLang = function () {
       var next = LANG === 'ar' ? 'en' : 'ar';
       try { localStorage.setItem('lang', next); } catch (e) {}
