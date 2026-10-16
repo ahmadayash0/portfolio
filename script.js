@@ -31,6 +31,25 @@ function el(tag, cls, text) {
   if (text != null) e.textContent = text;
   return e;
 }
+// Small preview copy made by the "Image previews" GitHub workflow (thumbs/<path>.webp).
+// Falls back to the original if the preview doesn't exist (yet).
+function previewOf(src) {
+  var p = asset(src);
+  if (!p || /^(data:|https?:|blob:)/.test(p)) return '';
+  return 'thumbs/' + p + '.webp';
+}
+function setPreview(el, src) {
+  var full = asset(src), small = previewOf(src);
+  if (!small) { el.src = full; return; }
+  el.onerror = function () { el.onerror = null; el.src = full; };
+  el.src = small;
+}
+function imgPreview(src, alt) {
+  var i = document.createElement('img');
+  i.alt = alt || ''; i.loading = 'lazy'; i.decoding = 'async';
+  setPreview(i, src);
+  return i;
+}
 function img(src, alt) {
   var i = document.createElement('img');
   i.src = asset(src); i.alt = alt || ''; i.loading = 'lazy'; i.decoding = 'async';
@@ -73,7 +92,7 @@ function render(c) {
   hn.appendChild(el('span', null, hero.lastName || ''));
 
   var photo = document.getElementById('profileImg');
-  photo.src = asset(hero.photo); photo.alt = (hero.firstName || '') + ' ' + (hero.lastName || '');
+  setPreview(photo, hero.photo); photo.alt = (hero.firstName || '') + ' ' + (hero.lastName || '');
 
   var cv = document.getElementById('cvBtn');
   if (hero.cv) { cv.href = asset(hero.cv); cv.setAttribute('download', asset(hero.cv).split('/').pop()); }
@@ -140,7 +159,7 @@ function render(c) {
         post.dataset.cat = p.category;
         post.onclick = function () { openImgLightbox(src, srcs, k); };
         var pt = el('div', 'portfolio-thumb');
-        pt.appendChild(img(src, (p.title || 'Post') + ' ' + (k + 1)));
+        pt.appendChild(imgPreview(src, (p.title || 'Post') + ' ' + (k + 1)));
         post.appendChild(pt);
         grid.appendChild(post);
       });
@@ -151,7 +170,7 @@ function render(c) {
     item.dataset.cat = p.category;
     item.onclick = function () { openProject(id); };
     var thumb = el('div', 'portfolio-thumb' + (p.category === 'logos' ? ' logo-thumb' : ''));
-    thumb.appendChild(img(p.thumbnail || images[0], p.title));
+    thumb.appendChild(imgPreview(p.thumbnail || images[0], p.title));
     thumb.appendChild(el('span', 'thumb-badge', badge));
     var info = el('div', 'portfolio-info');
     info.appendChild(el('h3', null, p.title));
@@ -218,7 +237,7 @@ function reviewCard(r, i) {
   var head = el('div', 'review-head');
   var person = el('div', 'review-person');
   var av = el('div', 'review-avatar');
-  if (r.photo) av.appendChild(img(r.photo, r.name)); else av.textContent = initials(r.name);
+  if (r.photo) av.appendChild(imgPreview(r.photo, r.name)); else av.textContent = initials(r.name);
   person.appendChild(av);
   var who = el('div', 'review-who');
   who.appendChild(el('div', 'review-name', r.name || ''));
@@ -577,6 +596,9 @@ function flipRender() {
   var last  = sp[1] ? V.images.indexOf(sp[1]) + 1 : first;
   document.getElementById('viewerCounter').textContent =
     (first === last ? first : first + '–' + last) + ' / ' + V.images.length;
+  [spreads[V.idx + 1], spreads[V.idx - 1]].forEach(function (p) {
+    if (p) p.forEach(function (u) { if (u) { var pre = new Image(); pre.src = u; } });
+  });
 }
 function flipNav(dir) {
   var spreads = flipSpreads();
