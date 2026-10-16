@@ -180,18 +180,26 @@
       if (data.opinion.length < 5) return showError('Please write a few words about your experience.');
       if (!API) return showError('Reviews are not open yet.');
 
-      btn.disabled = true; btn.textContent = 'Sending…';
-      fetch(API, { method: 'POST', body: JSON.stringify(data) })   // sent as text/plain (no CORS preflight)
-        .then(function (r) { return r.json(); })
-        .then(function (res) {
-          if (!res || !res.ok) throw new Error(res && res.error);
-          form.hidden = true; document.getElementById('rvIntro').hidden = true;
-          document.getElementById('rvDone').hidden = false;
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        })
+      // Show the thank-you screen right away; the review keeps sending in the background
+      // (Google can take a few seconds to wake up). keepalive lets it finish even if the tab is closed.
+      btn.disabled = true;
+      var done = document.getElementById('rvDone'), intro = document.getElementById('rvIntro');
+      form.hidden = true; intro.hidden = true; done.hidden = false;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      var body = JSON.stringify(data);
+      // 'no-cors': we only need the review to reach Google. Google's reply comes back through a
+      // redirect that browsers sometimes refuse to show to the page, even though the review was saved,
+      // so we don't wait for it. Only a real network failure counts as an error.
+      var opts = { method: 'POST', mode: 'no-cors', body: body };
+      if (body.length < 60000) opts.keepalive = true;
+      fetch(API, opts)
         .catch(function () {
-          showError('Sorry, something went wrong. Please try again in a moment.');
+          // bring the form back (with everything still filled in) so they can retry
+          done.hidden = true; intro.hidden = false; form.hidden = false;
+          showError('Sorry, your review could not be sent. Please check your connection and try again.');
           btn.disabled = false; btn.textContent = 'Send review';
+          errBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
         });
     });
   })();
