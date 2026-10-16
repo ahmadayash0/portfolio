@@ -184,7 +184,7 @@ function render(c) {
     contact.appendChild(a);
   });
 
-  renderReviews(c.reviews || []);
+  loadReviews(c);
 
   // Footer (year updates automatically)
   var f = document.getElementById('footer');
@@ -244,6 +244,23 @@ function reviewCard(r, i) {
   if (rating > 0) card.appendChild(starsEl(rating));
   card.appendChild(el('p', 'review-text', r.opinion || ''));
   return card;
+}
+
+// Reviews = approved reviews sent by clients (Google Sheet) + reviews added in the dashboard.
+function loadReviews(c) {
+  var own = c.reviews || [];
+  var api = ((c.site && c.site.reviewsApi) || '').trim();
+  if (!api) { renderReviews(own); return; }
+  var done = false;
+  var finish = function (fromClients) {
+    if (done) return; done = true;
+    renderReviews((fromClients || []).concat(own));
+  };
+  setTimeout(function () { finish([]); }, 8000);          // never wait forever
+  fetch(api)
+    .then(function (r) { return r.json(); })
+    .then(function (d) { finish((d && d.reviews) || []); })
+    .catch(function () { finish([]); });
 }
 
 // Moving strip: the cards slide in an endless loop (pauses on hover/touch).

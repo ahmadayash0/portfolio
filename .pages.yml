@@ -27,6 +27,7 @@ content:
           - { name: pageTitle, label: Browser tab title, type: string }
           - { name: navLogo, label: Logo text (top left), type: string }
           - { name: footerName, label: Name in footer, type: string }
+          - { name: reviewsApi, label: Reviews connection URL, type: string, description: "The Google Apps Script web app URL. Leave empty to turn off the client review form." }
 
       - name: hero
         label: About / Hero

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <meta name="robots" content="noindex"/>
+  <title>Leave a Review</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=Outfit:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+  <link href="styles.css" rel="stylesheet"/>
+ </head>
+ <body class="review-page">
+  <nav>
+   <a class="nav-logo" href="./" id="rvLogo">AHMAD</a>
+   <a class="rv-back" href="./">← Back to portfolio</a>
+  </nav>
+
+  <main class="rv-wrap">
+   <div class="section-label">Client Review</div>
+   <h1 class="rv-title">SHARE YOUR EXPERIENCE</h1>
+   <p class="rv-intro" id="rvIntro">Thank you for working with me! Your feedback means a lot. It will appear on the portfolio after a quick review.</p>
+
+   <form class="rv-form" id="rvForm" novalidate>
+    <!-- photo -->
+    <div class="rv-photo-row">
+     <label class="rv-avatar" for="rvPhoto" id="rvAvatar" title="Add your photo">
+      <span class="rv-avatar-plus">+</span>
+      <img id="rvAvatarImg" alt=""/>
+     </label>
+     <div>
+      <div class="rv-label-text">Your photo <span class="rv-opt">(optional)</span></div>
+      <label class="rv-link" for="rvPhoto" id="rvPhotoBtn">Upload a photo</label>
+      <button type="button" class="rv-link rv-remove" id="rvPhotoRemove" hidden>Remove</button>
+      <input type="file" id="rvPhoto" accept="image/*" hidden/>
+     </div>
+    </div>
+
+    <div class="rv-grid">
+     <label class="rv-field">
+      <span class="rv-label-text">Your name *</span>
+      <input type="text" name="name" maxlength="80" required autocomplete="name"/>
+     </label>
+     <label class="rv-field">
+      <span class="rv-label-text">Company / job title <span class="rv-opt">(optional)</span></span>
+      <input type="text" name="role" maxlength="80" autocomplete="organization-title"/>
+     </label>
+    </div>
+
+    <label class="rv-field">
+     <span class="rv-label-text">Country *</span>
+     <select name="country" required id="rvCountry">
+      <option value="">Select your country</option>
+     </select>
+    </label>
+
+    <div class="rv-field">
+     <span class="rv-label-text">Your rating *</span>
+     <div class="rv-stars" id="rvStars" role="radiogroup" aria-label="Rating"></div>
+    </div>
+
+    <label class="rv-field">
+     <span class="rv-label-text">Your review *</span>
+     <textarea name="opinion" rows="5" maxlength="1200" required placeholder="How was working together? What did you like most?"></textarea>
+     <span class="rv-count" id="rvCount">0 / 1200</span>
+    </label>
+
+    <!-- spam trap: real people never see or fill this -->
+    <input type="text" name="website" tabindex="-1" autocomplete="off" class="rv-hp" aria-hidden="true"/>
+
+    <div class="rv-error" id="rvError" hidden></div>
+    <button type="submit" class="rv-submit" id="rvSubmit">Send review</button>
+   </form>
+
+   <div class="rv-done" id="rvDone" hidden>
+    <div class="rv-done-icon">✓</div>
+    <h2>Thank you!</h2>
+    <p>Your review was sent. It will appear on the portfolio once it's approved.</p>
+    <a class="show-more-btn" href="./">Back to portfolio</a>
+   </div>
+  </main>
+
+  <script>
+  (function () {
+    var COUNTRIES = {
+      ps:'Palestine', sa:'Saudi Arabia', ae:'UAE', kw:'Kuwait', qa:'Qatar', bh:'Bahrain', om:'Oman',
+      jo:'Jordan', eg:'Egypt', lb:'Lebanon', sy:'Syria', iq:'Iraq', ye:'Yemen', ma:'Morocco',
+      dz:'Algeria', tn:'Tunisia', ly:'Libya', sd:'Sudan', tr:'Turkey', us:'USA', gb:'UK', ca:'Canada',
+      de:'Germany', fr:'France', it:'Italy', es:'Spain', nl:'Netherlands', se:'Sweden', au:'Australia'
+    };
+    var API = '', rating = 0, photo = '';
+    var form = document.getElementById('rvForm');
+    var F = function (n) { return form.elements.namedItem(n); };
+    var errBox = document.getElementById('rvError');
+    var btn = document.getElementById('rvSubmit');
+
+    // countries
+    var sel = document.getElementById('rvCountry');
+    Object.keys(COUNTRIES).forEach(function (c) {
+      var o = document.createElement('option'); o.value = c; o.textContent = COUNTRIES[c]; sel.appendChild(o);
+    });
+
+    // stars
+    var starsBox = document.getElementById('rvStars');
+    for (var i = 1; i <= 5; i++) (function (n) {
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'rv-star'; b.textContent = '★';
+      b.setAttribute('role', 'radio'); b.setAttribute('aria-label', n + ' star' + (n > 1 ? 's' : ''));
+      b.onclick = function () { rating = n; paintStars(n); };
+      b.onmouseenter = function () { paintStars(n, true); };
+      starsBox.appendChild(b);
+    })(i);
+    starsBox.onmouseleave = function () { paintStars(rating); };
+    function paintStars(n, hover) {
+      [].forEach.call(starsBox.children, function (b, i) {
+        b.classList.toggle('on', i < n);
+        b.setAttribute('aria-checked', !hover && i === n - 1 ? 'true' : 'false');
+      });
+    }
+
+    // character counter
+    var ta = F('opinion'), counter = document.getElementById('rvCount');
+    ta.addEventListener('input', function () { counter.textContent = ta.value.length + ' / 1200'; });
+
+    // photo: crop to a small square so it uploads instantly
+    var fileIn = document.getElementById('rvPhoto');
+    var avatarImg = document.getElementById('rvAvatarImg');
+    var avatar = document.getElementById('rvAvatar');
+    var removeBtn = document.getElementById('rvPhotoRemove');
+    fileIn.addEventListener('change', function () {
+      var f = fileIn.files && fileIn.files[0];
+      if (!f) return;
+      var url = URL.createObjectURL(f);
+      var im = new Image();
+      im.onload = function () {
+        var size = 200, c = document.createElement('canvas');
+        c.width = c.height = size;
+        var s = Math.min(im.width, im.height);
+        c.getContext('2d').drawImage(im, (im.width - s) / 2, (im.height - s) / 2, s, s, 0, 0, size, size);
+        var q = 0.85;
+        photo = c.toDataURL('image/jpeg', q);
+        while (photo.length > 40000 && q > 0.4) { q -= 0.1; photo = c.toDataURL('image/jpeg', q); }
+        avatarImg.src = photo; avatar.classList.add('has-photo');
+        removeBtn.hidden = false; document.getElementById('rvPhotoBtn').textContent = 'Change photo';
+        URL.revokeObjectURL(url);
+      };
+      im.onerror = function () { showError('That photo could not be read. Please try a JPG or PNG.'); };
+      im.src = url;
+    });
+    removeBtn.onclick = function () {
+      photo = ''; fileIn.value = ''; avatarImg.removeAttribute('src'); avatar.classList.remove('has-photo');
+      removeBtn.hidden = true; document.getElementById('rvPhotoBtn').textContent = 'Upload a photo';
+    };
+
+    function showError(msg) { errBox.textContent = msg; errBox.hidden = false; }
+
+    // connection URL comes from the dashboard (content.json → site.reviewsApi)
+    fetch('content.json', { cache: 'no-cache' }).then(function (r) { return r.json(); }).then(function (c) {
+      API = (c.site && c.site.reviewsApi || '').trim();
+      if (c.site && c.site.navLogo) document.getElementById('rvLogo').textContent = c.site.navLogo;
+      if (!API) {
+        form.hidden = true;
+        document.getElementById('rvIntro').textContent = 'Reviews are not open yet. Please check back soon.';
+      }
+    }).catch(function () {});
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      errBox.hidden = true;
+      var data = {
+        name: F('name').value.trim(),
+        role: F('role').value.trim(),
+        country: F('country').value,
+        rating: rating,
+        opinion: F('opinion').value.trim(),
+        photo: photo,
+        website: F('website').value
+      };
+      if (!data.name) return showError('Please enter your name.');
+      if (!data.country) return showError('Please select your country.');
+      if (!data.rating) return showError('Please choose a star rating.');
+      if (data.opinion.length < 5) return showError('Please write a few words about your experience.');
+      if (!API) return showError('Reviews are not open yet.');
+
+      btn.disabled = true; btn.textContent = 'Sending…';
+      fetch(API, { method: 'POST', body: JSON.stringify(data) })   // sent as text/plain (no CORS preflight)
+        .then(function (r) { return r.json(); })
+        .then(function (res) {
+          if (!res || !res.ok) throw new Error(res && res.error);
+          form.hidden = true; document.getElementById('rvIntro').hidden = true;
+          document.getElementById('rvDone').hidden = false;
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        })
+        .catch(function () {
+          showError('Sorry, something went wrong. Please try again in a moment.');
+          btn.disabled = false; btn.textContent = 'Send review';
+        });
+    });
+  })();
+  </script>
+ </body>
+</html>
