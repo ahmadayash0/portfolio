@@ -1,0 +1,128 @@
+# Makes small preview copies of images (thumbs/...) so the portfolio grid loads fast.
+# Originals are never changed. Runs when images change, or by hand from the Actions tab.
+name: Image previews
+
+on:
+  push:
+    branches: [main]
+    paths: ["images/**", "documents/**", ".github/workflows/thumbnails.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: thumbnails
+  cancel-in-progress: false
+
+jobs:
+  previews:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - run: pip install --quiet pillow
+
+      - name: Write the preview maker
+        run: |
+          cat > /tmp/make_thumbs.py <<'PYEOF'
+          #!/usr/bin/env python3
+          """
+          Creates small, sharp preview copies of every image for the portfolio grid.
+
+            images/social/post.jpg  ->  thumbs/images/social/post.jpg.webp
+
+          * Originals are NEVER changed. The viewer still opens the full-quality original.
+          * Previews fit inside 900x900 px (sharp on retina screens at grid size), WebP quality 82.
+          * Made when missing; files passed on the command line (changed images) are always remade.
+          * Previews whose original was deleted are removed.
+          """
+          import os, sys
+          from PIL import Image, ImageOps
+
+          SRC_DIRS = ["images", "documents"]
+          OUT = "thumbs"
+          MAX = 900
+          QUALITY = 82
+          EXTS = (".jpg", ".jpeg", ".png", ".webp")
+
+
+          def thumb_path(src):
+              return os.path.join(OUT, src + ".webp")
+
+
+          def make(src, force=False):
+              dst = thumb_path(src)
+              if os.path.exists(dst) and not force:
+                  return False
+              im = Image.open(src)
+              im = ImageOps.exif_transpose(im)
+              if im.mode not in ("RGB", "RGBA"):
+                  im = im.convert("RGBA" if ("transparency" in im.info or im.mode in ("LA", "P")) else "RGB")
+              im.thumbnail((MAX, MAX), Image.LANCZOS)
+              os.makedirs(os.path.dirname(dst), exist_ok=True)
+              im.save(dst, "WEBP", quality=QUALITY, method=6)
+              return True
+
+
+          def main(changed):
+              changed = set(os.path.normpath(c) for c in changed)
+              made = skipped = 0
+              wanted = set()
+              for d in SRC_DIRS:
+                  for root, _, files in os.walk(d):
+                      for f in files:
+                          src = os.path.join(root, f)
+                          if not f.lower().endswith(EXTS):
+                              continue
+                          wanted.add(thumb_path(src))
+                          try:
+                              if make(src, os.path.normpath(src) in changed):
+                                  made += 1
+                          except Exception as e:
+                              skipped += 1
+                              print("skipped", src, e)
+              removed = 0
+              if os.path.isdir(OUT):
+                  for root, _, files in os.walk(OUT):
+                      for f in files:
+                          p = os.path.join(root, f)
+                          if p not in wanted:
+                              os.remove(p)
+                              removed += 1
+              print(f"previews made: {made}, removed: {removed}, skipped: {skipped}, total: {len(wanted)}")
+
+
+          if __name__ == "__main__":
+              main(sys.argv[1:])
+          PYEOF
+
+      - name: Make previews
+        env:
+          BEFORE: ${{ github.event.before }}
+        run: |
+          CHANGED=()
+          if [ "${{ github.event_name }}" = "push" ] && git cat-file -e "$BEFORE" 2>/dev/null; then
+            while IFS= read -r -d '' f; do CHANGED+=("$f"); done < <(git diff --name-only -z --diff-filter=AM "$BEFORE" HEAD -- images documents)
+          fi
+          python /tmp/make_thumbs.py "${CHANGED[@]}"
+
+      - name: Save previews
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A thumbs
+          if git diff --cached --quiet; then echo "Previews already up to date."; exit 0; fi
+          git commit -m "Update image previews (automatic)"
+          for i in 1 2 3; do
+            git pull --rebase origin main && git push origin HEAD:main && exit 0
+            sleep 5
+          done
+          exit 1
