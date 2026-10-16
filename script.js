@@ -69,13 +69,13 @@ var UI = {
     'nav.about': 'About', 'nav.skills': 'Skills', 'nav.services': 'Services', 'nav.portfolio': 'Portfolio',
     'nav.reviews': 'Reviews', 'nav.contact': 'Contact', 'switch': 'عربي',
     'cv': 'Download CV',
-    'skills.label': 'Expertise', 'skills.title': 'Tools I work with',
-    'services.label': 'What I Do', 'services.title': 'What I design',
-    'portfolio.label': 'Selected Work', 'portfolio.title': 'Selected work',
-    'reviews.label': 'Testimonials', 'reviews.title': 'What clients say',
+    'skills.label': 'Expertise', 'skills.title': 'TOOLS & SKILLS',
+    'services.label': 'What I Do', 'services.title': 'SERVICES',
+    'portfolio.label': 'Selected Work', 'portfolio.title': 'PORTFOLIO',
+    'reviews.label': 'Testimonials', 'reviews.title': 'WHAT CLIENTS SAY',
     'reviews.empty': 'No reviews yet. Worked with me? Be the first to share your experience.',
     'reviews.leave': 'Leave a review',
-    'contact.label': 'Get in Touch', 'contact.title': "Let's work together", 'hero.contact': 'Get in touch',
+    'contact.label': 'Get in Touch', 'contact.title': "LET'S WORK TOGETHER",
     'tab.logos': 'Logos', 'tab.branding': 'Brand Identity', 'tab.social': 'Social Media', 'tab.catalog': 'Catalogs',
     'badge.logo': 'Logo', 'badge.view': 'View', 'badge.flipbook': 'Flipbook', 'badge.posts': '{n} Posts',
     'count.pages': '{n} Pages', 'count.posts': '{n} posts', 'viewer.pages': '{n} pages', 'viewer.posts': '{n} posts',
@@ -88,13 +88,13 @@ var UI = {
     'nav.about': 'نبذة', 'nav.skills': 'المهارات', 'nav.services': 'الخدمات', 'nav.portfolio': 'الأعمال',
     'nav.reviews': 'الآراء', 'nav.contact': 'تواصل', 'switch': 'EN',
     'cv': 'تحميل السيرة الذاتية',
-    'skills.label': 'الخبرة', 'skills.title': 'أدواتي في التصميم',
-    'services.label': 'ماذا أقدّم', 'services.title': 'ماذا أصمّم',
-    'portfolio.label': 'أعمال مختارة', 'portfolio.title': 'أعمال مختارة',
+    'skills.label': 'الخبرة', 'skills.title': 'الأدوات والمهارات',
+    'services.label': 'ماذا أقدّم', 'services.title': 'الخدمات',
+    'portfolio.label': 'أعمال مختارة', 'portfolio.title': 'معرض الأعمال',
     'reviews.label': 'آراء العملاء', 'reviews.title': 'ماذا يقول العملاء',
     'reviews.empty': 'لا توجد آراء بعد. عملتَ معي؟ كن أول من يشارك تجربته.',
     'reviews.leave': 'اترك تقييمك',
-    'contact.label': 'تواصل معي', 'contact.title': 'لنعمل معًا', 'hero.contact': 'تواصل معي',
+    'contact.label': 'تواصل معي', 'contact.title': 'لنعمل معًا',
     'tab.logos': 'الشعارات', 'tab.branding': 'الهويات البصرية', 'tab.social': 'السوشيال ميديا', 'tab.catalog': 'الكتالوجات',
     'badge.logo': 'شعار', 'badge.view': 'عرض', 'badge.flipbook': 'تصفّح', 'badge.posts': '{n} منشور',
     'count.pages': '{n} صفحة', 'count.posts': '{n} منشور', 'viewer.pages': '{n} صفحة', 'viewer.posts': '{n} منشور',
@@ -149,7 +149,6 @@ var CONTACT_TYPES = {
 };
 
 var PROJECTS = {};
-var SWATCHES = ['#00A0E3', '#E5007D', '#FFD100', '#16161A', '#2F6BFF', '#00A86B'];
 
 // ===== Build the page from content.json =====
 function render(c) {
@@ -201,10 +200,7 @@ function render(c) {
   var services = document.getElementById('servicesList');
   (c.services || []).forEach(function (s, i) {
     var row = el('article', 'service-row');
-    var sw = el('span', 'service-swatch');                  // process-color swatch (C, M, Y, K, blue…)
-    sw.style.setProperty('--sw', SWATCHES[i % SWATCHES.length]);
-    sw.setAttribute('aria-hidden', 'true');
-    row.appendChild(sw);
+    row.appendChild(el('span', 'service-num', String(i + 1).padStart(2, '0')));
     var body = el('div', 'service-body');
     body.appendChild(el('h3', null, tr(s, 'title')));
     body.appendChild(el('p', null, tr(s, 'description')));
@@ -248,11 +244,11 @@ function render(c) {
     var item = el('div', 'portfolio-item');
     item.dataset.cat = p.category;
     item.onclick = function () { openProject(id); };
-    item.appendChild(el('div', 'artboard-name', title));   // like an artboard name in Illustrator
     var thumb = el('div', 'portfolio-thumb' + (p.category === 'logos' ? ' logo-thumb' : ''));
     thumb.appendChild(imgPreview(p.thumbnail || images[0], title));
     thumb.appendChild(el('span', 'thumb-badge', badge));
     var info = el('div', 'portfolio-info');
+    info.appendChild(el('h3', null, title));
     info.appendChild(el('p', null, sub));
     item.appendChild(thumb); item.appendChild(info);
     grid.appendChild(item);
