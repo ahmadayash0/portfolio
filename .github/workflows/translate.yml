@@ -1,0 +1,108 @@
+# Fills EMPTY Arabic fields in content.json with Google Translate after every dashboard save.
+# Arabic you wrote yourself is never changed. Names are not translated.
+name: Auto-translate Arabic
+
+on:
+  push:
+    branches: [main]
+    paths: ["content.json", ".github/workflows/translate.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: translate
+  cancel-in-progress: false
+
+jobs:
+  translate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Write the translator
+        run: |
+          cat > /tmp/autotranslate.py <<'PYEOF'
+          #!/usr/bin/env python3
+          """
+          Fills EMPTY Arabic fields (..._ar) in content.json with Google Translate.
+          * Never changes an Arabic text you wrote yourself.
+          * Names are not translated (your name, project names, tool names, clients).
+          * Uses the Google script already saved in site.reviewsApi.
+          """
+          import json, sys, urllib.request
+          
+          PATH = "content.json"
+          # section -> fields to translate (names are intentionally not listed)
+          FIELDS = {
+              "site": ["pageTitle"],
+              "hero": ["tag", "title", "description"],
+              "stats": ["label"],
+              "skills": ["level"],
+              "services": ["title", "description"],
+              "projects": ["subtitle"],
+              "contact": ["label"],
+          }
+          
+          def translate(api, texts):
+              body = json.dumps({"action": "translate", "texts": texts}).encode()
+              req = urllib.request.Request(api, data=body, headers={"Content-Type": "text/plain"})
+              with urllib.request.urlopen(req, timeout=120) as r:   # follows Google's redirect
+                  data = json.loads(r.read().decode())
+              out = data.get("out") or []
+              if len(out) != len(texts):
+                  raise SystemExit("Google script did not return translations - was the new version deployed?")
+              return out
+          
+          def main():
+              raw = open(PATH, encoding="utf-8").read()
+              data = json.loads(raw)
+              api = (data.get("site") or {}).get("reviewsApi", "").strip()
+              if not api:
+                  print("No Google script URL (site.reviewsApi) - nothing to do."); return
+              todo = []  # (object, key, english)
+              for section, keys in FIELDS.items():
+                  part = data.get(section)
+                  items = part if isinstance(part, list) else [part] if isinstance(part, dict) else []
+                  for obj in items:
+                      if not isinstance(obj, dict):
+                          continue
+                      for k in keys:
+                          en = obj.get(k)
+                          if isinstance(en, str) and en.strip() and not str(obj.get(k + "_ar") or "").strip():
+                              todo.append((obj, k, en.strip()))
+              if not todo:
+                  print("All Arabic fields already filled."); return
+              done = 0
+              for i in range(0, len(todo), 50):
+                  chunk = todo[i:i + 50]
+                  for (obj, k, _), ar in zip(chunk, translate(api, [t[2] for t in chunk])):
+                      if ar and ar.strip():
+                          obj[k + "_ar"] = ar.strip(); done += 1
+                          print(f"{k}: {obj[k]!r} -> {ar.strip()!r}")
+              if done:
+                  with open(PATH, "w", encoding="utf-8") as f:
+                      f.write(json.dumps(data, ensure_ascii=False, indent=2) + ("\n" if raw.endswith("\n") else ""))
+              print(f"Translated {done} field(s).")
+          
+          if __name__ == "__main__":
+              main()
+          PYEOF
+
+      - name: Translate empty Arabic fields
+        run: python3 /tmp/autotranslate.py
+
+      - name: Save
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add content.json
+          if git diff --cached --quiet; then echo "Nothing new to translate."; exit 0; fi
+          git commit -m "Fill Arabic translations (automatic)"
+          for i in 1 2 3; do
+            git pull --rebase origin main && git push origin HEAD:main && exit 0
+            sleep 5
+          done
+          exit 1
