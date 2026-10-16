@@ -1409,7 +1409,7 @@ img[loading="lazy"] { will-change: auto; }
 .rv-link { display: inline-block; margin-top: 6px; color: var(--neon); font-size: 14px; cursor: pointer; background: none; border: none; font-family: 'Outfit', sans-serif; padding: 0; }
 .rv-link:hover { text-decoration: underline; }
 .rv-remove { color: var(--gray); margin-left: 14px; }
-.rv-hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.rv-hp { position: absolute; top: 0; left: 0; width: 1px; height: 1px; padding: 0; border: 0; opacity: 0; overflow: hidden; clip-path: inset(50%); pointer-events: none; }
 .rv-error { background: rgba(255,80,80,0.08); border: 1px solid rgba(255,80,80,0.35); color: #ff8a8a; border-radius: 10px; padding: 12px 14px; font-size: 14px; }
 .rv-submit {
   background: var(--neon); color: var(--black); border: none; border-radius: 30px; padding: 16px 30px;
@@ -1448,4 +1448,84 @@ img[loading="lazy"] { will-change: auto; }
 @media (max-width: 600px) {
   .reviews-cta { margin-top: 24px; }
   .rv-cta-btn { width: 100%; justify-content: center; }
+}
+
+/* ===== Language switch ===== */
+.lang-toggle {
+  margin-inline-start: 22px;
+  background: transparent;
+  color: var(--neon);
+  border: 1px solid rgba(200,255,0,0.45);
+  border-radius: 30px;
+  padding: 7px 14px;
+  font-family: 'IBM Plex Sans Arabic', 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.25s, color 0.25s;
+}
+.lang-toggle:hover { background: var(--neon); color: var(--black); }
+.lang-toggle:lang(en) { font-family: 'Outfit', sans-serif; letter-spacing: 1px; }
+@media (max-width: 600px) {
+  .lang-toggle { margin-inline-start: auto; margin-inline-end: 14px; padding: 6px 12px; }
+}
+
+/* ===== Arabic (right-to-left) ===== */
+/* Latin text keeps the site fonts; Arabic letters use matching Arabic fonts. */
+html[dir=rtl] body,
+html[dir=rtl] button, html[dir=rtl] input, html[dir=rtl] select, html[dir=rtl] textarea,
+html[dir=rtl] .tab-btn, html[dir=rtl] .thumb-badge, html[dir=rtl] .show-more-btn,
+html[dir=rtl] .rv-cta-btn, html[dir=rtl] .rv-submit, html[dir=rtl] .rv-link, html[dir=rtl] .viewer-counter {
+  font-family: 'Outfit', 'IBM Plex Sans Arabic', sans-serif;
+}
+html[dir=rtl] .nav-logo, html[dir=rtl] .hero-name, html[dir=rtl] .section-title,
+html[dir=rtl] .rv-title, html[dir=rtl] .rv-done h2 {
+  font-family: 'Bebas Neue', 'Alexandria', sans-serif;
+  font-weight: 800;
+}
+/* Spacing out Arabic letters breaks how they connect, so never do it in Arabic. */
+html[dir=rtl] body *:not(.stat-num):not(.service-num):not(.lang-toggle) { letter-spacing: 0 !important; }
+html[dir=rtl] .hero-name { font-size: clamp(44px, 6.5vw, 84px); line-height: 1.25; }
+html[dir=rtl] .section-title { line-height: 1.35; }
+html[dir=rtl] .hero-desc, html[dir=rtl] .service-body p, html[dir=rtl] .review-text { line-height: 1.95; }
+html[dir=rtl] .stat-num { direction: ltr; unicode-bidi: isolate; }
+
+/* mirror the decorative pieces */
+html[dir=rtl] .hero::before { right: auto; left: -200px; }
+html[dir=rtl] .hero::after { left: auto; right: -20px; }
+html[dir=rtl] .profile-frame::before { right: auto; left: -10px; }
+html[dir=rtl] .profile-frame::after { left: auto; right: -30px; }
+html[dir=rtl] .service-row::before { left: auto; right: 0; }
+html[dir=rtl] .thumb-badge { right: auto; left: 12px; }
+html[dir=rtl] .rv-remove { margin-left: 0; margin-right: 14px; }
+html[dir=rtl] .rv-form select { background-position: 20px 50%, 15px 50%; }
+@media (max-width: 600px) {
+  html[dir=rtl] .profile-frame::after { right: -15px; }
+}
+
+/* images, viewers and the moving strip keep their normal direction */
+html[dir=rtl] .viewer, html[dir=rtl] .imglightbox { direction: ltr; }
+html[dir=rtl] .viewer-meta { direction: rtl; text-align: right; }
+html[dir=rtl] .reviews-marquee { direction: ltr; }
+html[dir=rtl] .review-card { direction: rtl; }
+.rv-nav-right { display: flex; align-items: center; }
+html[dir=rtl] .rv-count { align-self: flex-start; }
+/* Arabic letters need a little more size than Latin at small sizes */
+html[dir=rtl] .section-label { font-size: 14px; }
+html[dir=rtl] .hero-tag { font-size: 13px; }
+html[dir=rtl] .stat-label { font-size: 13px; }
+html[dir=rtl] .skill-level { font-size: 13px; }
+html[dir=rtl] .hero-title { font-size: 19px; }
+html[dir=rtl] .contact-label { font-size: 13px; }
+html[dir=rtl] .portfolio-info p { font-size: 13px; }
+html[dir=rtl] .review-meta, html[dir=rtl] .review-role { font-size: 13px; }
+html[dir=rtl] .tab-btn { font-size: 14px; }
+html[dir=rtl] .thumb-badge { font-size: 12px; }
+html[dir=rtl] .nav-links a { font-size: 15px; }
+html[dir=rtl] footer { font-size: 14px; }
+html[dir=rtl] .review-card::after { right: auto; left: 18px; }
+html[dir=rtl] .review-card::before { right: auto; left: -80px; }
+@media (max-width: 600px) {
+  html[dir=rtl] .stat-label { font-size: 12px; }
 }

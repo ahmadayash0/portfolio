@@ -25,8 +25,11 @@ content:
         type: object
         fields:
           - { name: pageTitle, label: Browser tab title, type: string }
+          - { name: pageTitle_ar, label: Browser tab title (Arabic), type: string }
           - { name: navLogo, label: Logo text (top left), type: string }
+          - { name: navLogo_ar, label: Logo text (Arabic), type: string }
           - { name: footerName, label: Name in footer, type: string }
+          - { name: footerName_ar, label: Name in footer (Arabic), type: string }
           - { name: reviewsApi, label: Reviews connection URL, type: string, description: "The Google Apps Script web app URL. Leave empty to turn off the client review form." }
 
       - name: hero
@@ -34,10 +37,15 @@ content:
         type: object
         fields:
           - { name: tag, label: Badge (e.g. Available for Projects), type: string }
+          - { name: tag_ar, label: Badge (Arabic), type: string }
           - { name: firstName, label: First name, type: string }
+          - { name: firstName_ar, label: First name (Arabic), type: string }
           - { name: lastName, label: Last name (highlighted), type: string }
+          - { name: lastName_ar, label: Last name (Arabic), type: string }
           - { name: title, label: Job title, type: string }
+          - { name: title_ar, label: Job title (Arabic), type: string }
           - { name: description, label: About text, type: text }
+          - { name: description_ar, label: About text (Arabic), type: text }
           - { name: photo, label: Profile photo, type: image, options: { media: images } }
           - { name: cv, label: CV file (PDF), type: file, options: { media: documents } }
 
@@ -49,6 +57,7 @@ content:
           - { name: number, label: Number, type: number }
           - { name: suffix, label: Suffix (e.g. +), type: string }
           - { name: label, label: Label, type: string }
+          - { name: label_ar, label: Label (Arabic), type: string }
 
       - name: skills
         label: Tools & Skills
@@ -57,6 +66,7 @@ content:
         fields:
           - { name: name, label: Tool name, type: string }
           - { name: level, label: Level, type: string }
+          - { name: level_ar, label: Level (Arabic), type: string }
           - { name: icon, label: Icon, type: image, options: { media: images } }
 
       - name: services
@@ -65,7 +75,9 @@ content:
         list: true
         fields:
           - { name: title, label: Title, type: string }
+          - { name: title_ar, label: Title (Arabic), type: string }
           - { name: description, label: Description, type: text }
+          - { name: description_ar, label: Description (Arabic), type: text }
 
       - name: projects
         label: Portfolio projects
@@ -74,7 +86,9 @@ content:
         list: true
         fields:
           - { name: title, label: Project name, type: string, required: true }
+          - { name: title_ar, label: Project name (Arabic — leave empty to keep the English name), type: string }
           - { name: subtitle, label: Subtitle (e.g. Brand Identity), type: string }
+          - { name: subtitle_ar, label: Subtitle (Arabic), type: string }
           - name: category
             label: Tab
             type: select
@@ -176,3 +190,4 @@ content:
                 - { name: link, label: Other link (Behance, LinkedIn…) }
           - { name: value, label: "Email / number / URL", type: string }
           - { name: label, label: Custom label (optional), type: string }
+          - { name: label_ar, label: Custom label (Arabic, optional), type: string }

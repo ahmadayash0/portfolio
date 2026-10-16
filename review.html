@@ -6,18 +6,30 @@
   <meta name="robots" content="noindex"/>
   <title>Leave a Review</title>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=Outfit:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+  <script>
+   // Pick the language before anything is drawn (avoids a flash of the wrong direction)
+   (function () {
+     var q = new URLSearchParams(location.search).get('lang'), s = null;
+     try { s = localStorage.getItem('lang'); } catch (e) {}
+     var l = (q === 'ar' || q === 'en') ? q : (s === 'ar' || s === 'en') ? s : (/^ar/i.test(navigator.language || '') ? 'ar' : 'en');
+     if (q) { try { localStorage.setItem('lang', l); } catch (e) {} }
+     document.documentElement.lang = l;
+     document.documentElement.dir = l === 'ar' ? 'rtl' : 'ltr';
+     if (l === 'ar') document.write('<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;700;800&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">');
+   })();
+  </script>
   <link href="styles.css" rel="stylesheet"/>
  </head>
  <body class="review-page">
   <nav>
    <a class="nav-logo" href="./" id="rvLogo">AHMAD</a>
-   <a class="rv-back" href="./">← Back to portfolio</a>
+   <div class="rv-nav-right"><a class="rv-back" href="./" data-i18n="back">← Back to portfolio</a><button class="lang-toggle" id="langToggle" type="button" onclick="switchLang()">عربي</button></div>
   </nav>
 
   <main class="rv-wrap">
-   <div class="section-label">Client Review</div>
-   <h1 class="rv-title">SHARE YOUR EXPERIENCE</h1>
-   <p class="rv-intro" id="rvIntro">Thank you for working with me! Your feedback means a lot. It will appear on the portfolio after a quick review.</p>
+   <div class="section-label" data-i18n="label">Client Review</div>
+   <h1 class="rv-title" data-i18n="title">SHARE YOUR EXPERIENCE</h1>
+   <p class="rv-intro" id="rvIntro" data-i18n="intro">Thank you for working with me! Your feedback means a lot. It will appear on the portfolio after a quick review.</p>
 
    <form class="rv-form" id="rvForm" novalidate>
     <!-- photo -->
@@ -27,39 +39,39 @@
       <img id="rvAvatarImg" alt=""/>
      </label>
      <div>
-      <div class="rv-label-text">Your photo <span class="rv-opt">(optional)</span></div>
-      <label class="rv-link" for="rvPhoto" id="rvPhotoBtn">Upload a photo</label>
-      <button type="button" class="rv-link rv-remove" id="rvPhotoRemove" hidden>Remove</button>
+      <div class="rv-label-text"><span data-i18n="photo">Your photo</span> <span class="rv-opt" data-i18n="optional">(optional)</span></div>
+      <label class="rv-link" for="rvPhoto" id="rvPhotoBtn" data-i18n="upload">Upload a photo</label>
+      <button type="button" class="rv-link rv-remove" id="rvPhotoRemove" hidden data-i18n="remove">Remove</button>
       <input type="file" id="rvPhoto" accept="image/*" hidden/>
      </div>
     </div>
 
     <div class="rv-grid">
      <label class="rv-field">
-      <span class="rv-label-text">Your name *</span>
+      <span class="rv-label-text" data-i18n="name">Your name *</span>
       <input type="text" name="name" maxlength="80" required autocomplete="name"/>
      </label>
      <label class="rv-field">
-      <span class="rv-label-text">Company / job title <span class="rv-opt">(optional)</span></span>
+      <span class="rv-label-text"><span data-i18n="role">Company / job title</span> <span class="rv-opt" data-i18n="optional">(optional)</span></span>
       <input type="text" name="role" maxlength="80" autocomplete="organization-title"/>
      </label>
     </div>
 
     <label class="rv-field">
-     <span class="rv-label-text">Country *</span>
+     <span class="rv-label-text" data-i18n="country">Country *</span>
      <select name="country" required id="rvCountry">
-      <option value="">Select your country</option>
+      <option value="" data-i18n="selectCountry">Select your country</option>
      </select>
     </label>
 
     <div class="rv-field">
-     <span class="rv-label-text">Your rating *</span>
+     <span class="rv-label-text" data-i18n="rating">Your rating *</span>
      <div class="rv-stars" id="rvStars" role="radiogroup" aria-label="Rating"></div>
     </div>
 
     <label class="rv-field">
-     <span class="rv-label-text">Your review *</span>
-     <textarea name="opinion" rows="5" maxlength="1200" required placeholder="How was working together? What did you like most?"></textarea>
+     <span class="rv-label-text" data-i18n="review">Your review *</span>
+     <textarea name="opinion" rows="5" maxlength="1200" required data-i18n-ph="placeholder" placeholder="How was working together? What did you like most?"></textarea>
      <span class="rv-count" id="rvCount">0 / 1200</span>
     </label>
 
@@ -67,14 +79,14 @@
     <input type="text" name="website" tabindex="-1" autocomplete="off" class="rv-hp" aria-hidden="true"/>
 
     <div class="rv-error" id="rvError" hidden></div>
-    <button type="submit" class="rv-submit" id="rvSubmit">Send review</button>
+    <button type="submit" class="rv-submit" id="rvSubmit" data-i18n="send">Send review</button>
    </form>
 
    <div class="rv-done" id="rvDone" hidden>
     <div class="rv-done-icon">✓</div>
-    <h2>Thank you!</h2>
-    <p>Your review was sent. It will appear on the portfolio once it's approved.</p>
-    <a class="show-more-btn" href="./">Back to portfolio</a>
+    <h2 data-i18n="thanks">Thank you!</h2>
+    <p data-i18n="sent">Your review was sent. It will appear on the portfolio once it's approved.</p>
+    <a class="show-more-btn" href="./" data-i18n="backBtn">Back to portfolio</a>
    </div>
   </main>
 
@@ -86,6 +98,52 @@
       dz:'Algeria', tn:'Tunisia', ly:'Libya', sd:'Sudan', tr:'Turkey', us:'USA', gb:'UK', ca:'Canada',
       de:'Germany', fr:'France', it:'Italy', es:'Spain', nl:'Netherlands', se:'Sweden', au:'Australia'
     };
+    var COUNTRIES_AR = {
+      ps:'فلسطين', sa:'السعودية', ae:'الإمارات', kw:'الكويت', qa:'قطر', bh:'البحرين', om:'عُمان',
+      jo:'الأردن', eg:'مصر', lb:'لبنان', sy:'سوريا', iq:'العراق', ye:'اليمن', ma:'المغرب',
+      dz:'الجزائر', tn:'تونس', ly:'ليبيا', sd:'السودان', tr:'تركيا', us:'الولايات المتحدة', gb:'المملكة المتحدة', ca:'كندا',
+      de:'ألمانيا', fr:'فرنسا', it:'إيطاليا', es:'إسبانيا', nl:'هولندا', se:'السويد', au:'أستراليا'
+    };
+    var LANG = document.documentElement.lang === 'ar' ? 'ar' : 'en';
+    var UI = {
+      en: {
+        back: '← Back to portfolio', label: 'Client Review', title: 'SHARE YOUR EXPERIENCE',
+        intro: 'Thank you for working with me! Your feedback means a lot. It will appear on the portfolio after a quick review.',
+        photo: 'Your photo', optional: '(optional)', upload: 'Upload a photo', change: 'Change photo', remove: 'Remove',
+        name: 'Your name *', role: 'Company / job title', country: 'Country *', selectCountry: 'Select your country',
+        rating: 'Your rating *', review: 'Your review *', placeholder: 'How was working together? What did you like most?',
+        send: 'Send review', thanks: 'Thank you!', sent: "Your review was sent. It will appear on the portfolio once it's approved.",
+        backBtn: 'Back to portfolio', switchTo: 'عربي', pageTitle: 'Leave a Review',
+        errName: 'Please enter your name.', errCountry: 'Please select your country.', errRating: 'Please choose a star rating.',
+        errText: 'Please write a few words about your experience.', errClosed: 'Reviews are not open yet.',
+        closed: 'Reviews are not open yet. Please check back soon.', errPhoto: 'That photo could not be read. Please try a JPG or PNG.',
+        errSend: 'Sorry, your review could not be sent. Please check your connection and try again.'
+      },
+      ar: {
+        back: '→ العودة إلى المعرض', label: 'رأي العميل', title: 'شاركنا تجربتك',
+        intro: 'شكرًا لعملك معي! رأيك يهمّني كثيرًا، وسيظهر في المعرض بعد مراجعة سريعة.',
+        photo: 'صورتك', optional: '(اختياري)', upload: 'رفع صورة', change: 'تغيير الصورة', remove: 'حذف',
+        name: 'اسمك *', role: 'الشركة / المسمّى الوظيفي', country: 'الدولة *', selectCountry: 'اختر دولتك',
+        rating: 'تقييمك *', review: 'رأيك *', placeholder: 'كيف كانت تجربة العمل معًا؟ ما أكثر ما أعجبك؟',
+        send: 'إرسال التقييم', thanks: 'شكرًا لك!', sent: 'تم إرسال رأيك، وسيظهر في المعرض بعد الموافقة عليه.',
+        backBtn: 'العودة إلى المعرض', switchTo: 'EN', pageTitle: 'اترك تقييمك',
+        errName: 'يرجى كتابة اسمك.', errCountry: 'يرجى اختيار دولتك.', errRating: 'يرجى اختيار عدد النجوم.',
+        errText: 'يرجى كتابة بضع كلمات عن تجربتك.', errClosed: 'استقبال الآراء غير متاح حاليًا.',
+        closed: 'استقبال الآراء غير متاح حاليًا. يرجى المحاولة لاحقًا.', errPhoto: 'تعذّرت قراءة الصورة. جرّب صورة بصيغة JPG أو PNG.',
+        errSend: 'عذرًا، تعذّر إرسال رأيك. تحقّق من اتصالك بالإنترنت وحاول مرة أخرى.'
+      }
+    };
+    var T = function (k) { return UI[LANG][k] || UI.en[k] || k; };
+    document.title = T('pageTitle');
+    document.querySelectorAll('[data-i18n]').forEach(function (n) { n.textContent = T(n.getAttribute('data-i18n')); });
+    document.querySelectorAll('[data-i18n-ph]').forEach(function (n) { n.placeholder = T(n.getAttribute('data-i18n-ph')); });
+    var lt = document.getElementById('langToggle'); lt.textContent = T('switchTo');
+    window.switchLang = function () {
+      var next = LANG === 'ar' ? 'en' : 'ar';
+      try { localStorage.setItem('lang', next); } catch (e) {}
+      var u = new URL(location.href); u.searchParams.set('lang', next); location.replace(u.toString());
+    };
+
     var API = '', rating = 0, photo = '';
     var form = document.getElementById('rvForm');
     var F = function (n) { return form.elements.namedItem(n); };
@@ -95,7 +153,7 @@
     // countries
     var sel = document.getElementById('rvCountry');
     Object.keys(COUNTRIES).forEach(function (c) {
-      var o = document.createElement('option'); o.value = c; o.textContent = COUNTRIES[c]; sel.appendChild(o);
+      var o = document.createElement('option'); o.value = c; o.textContent = (LANG === 'ar' && COUNTRIES_AR[c]) || COUNTRIES[c]; sel.appendChild(o);
     });
 
     // stars
@@ -103,7 +161,7 @@
     for (var i = 1; i <= 5; i++) (function (n) {
       var b = document.createElement('button');
       b.type = 'button'; b.className = 'rv-star'; b.textContent = '★';
-      b.setAttribute('role', 'radio'); b.setAttribute('aria-label', n + ' star' + (n > 1 ? 's' : ''));
+      b.setAttribute('role', 'radio'); b.setAttribute('aria-label', LANG === 'ar' ? n + ' من 5' : n + ' star' + (n > 1 ? 's' : ''));
       b.onclick = function () { rating = n; paintStars(n); };
       b.onmouseenter = function () { paintStars(n, true); };
       starsBox.appendChild(b);
@@ -139,15 +197,15 @@
         photo = c.toDataURL('image/jpeg', q);
         while (photo.length > 40000 && q > 0.4) { q -= 0.1; photo = c.toDataURL('image/jpeg', q); }
         avatarImg.src = photo; avatar.classList.add('has-photo');
-        removeBtn.hidden = false; document.getElementById('rvPhotoBtn').textContent = 'Change photo';
+        removeBtn.hidden = false; document.getElementById('rvPhotoBtn').textContent = T('change');
         URL.revokeObjectURL(url);
       };
-      im.onerror = function () { showError('That photo could not be read. Please try a JPG or PNG.'); };
+      im.onerror = function () { showError(T('errPhoto')); };
       im.src = url;
     });
     removeBtn.onclick = function () {
       photo = ''; fileIn.value = ''; avatarImg.removeAttribute('src'); avatar.classList.remove('has-photo');
-      removeBtn.hidden = true; document.getElementById('rvPhotoBtn').textContent = 'Upload a photo';
+      removeBtn.hidden = true; document.getElementById('rvPhotoBtn').textContent = T('upload');
     };
 
     function showError(msg) { errBox.textContent = msg; errBox.hidden = false; }
@@ -155,10 +213,10 @@
     // connection URL comes from the dashboard (content.json → site.reviewsApi)
     fetch('content.json', { cache: 'no-cache' }).then(function (r) { return r.json(); }).then(function (c) {
       API = (c.site && c.site.reviewsApi || '').trim();
-      if (c.site && c.site.navLogo) document.getElementById('rvLogo').textContent = c.site.navLogo;
+      var logo = c.site && ((LANG === 'ar' && c.site.navLogo_ar) || c.site.navLogo); if (logo) document.getElementById('rvLogo').textContent = logo;
       if (!API) {
         form.hidden = true;
-        document.getElementById('rvIntro').textContent = 'Reviews are not open yet. Please check back soon.';
+        document.getElementById('rvIntro').textContent = T('closed');
       }
     }).catch(function () {});
 
@@ -174,11 +232,11 @@
         photo: photo,
         website: F('website').value
       };
-      if (!data.name) return showError('Please enter your name.');
-      if (!data.country) return showError('Please select your country.');
-      if (!data.rating) return showError('Please choose a star rating.');
-      if (data.opinion.length < 5) return showError('Please write a few words about your experience.');
-      if (!API) return showError('Reviews are not open yet.');
+      if (!data.name) return showError(T('errName'));
+      if (!data.country) return showError(T('errCountry'));
+      if (!data.rating) return showError(T('errRating'));
+      if (data.opinion.length < 5) return showError(T('errText'));
+      if (!API) return showError(T('errClosed'));
 
       // Show the thank-you screen right away; the review keeps sending in the background
       // (Google can take a few seconds to wake up). keepalive lets it finish even if the tab is closed.
@@ -197,8 +255,8 @@
         .catch(function () {
           // bring the form back (with everything still filled in) so they can retry
           done.hidden = true; intro.hidden = false; form.hidden = false;
-          showError('Sorry, your review could not be sent. Please check your connection and try again.');
-          btn.disabled = false; btn.textContent = 'Send review';
+          showError(T('errSend'));
+          btn.disabled = false; btn.textContent = T('send');
           errBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
         });
     });

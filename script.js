@@ -59,12 +59,86 @@ function get(obj, path) {
   return path.split('.').reduce(function (o, k) { return o ? o[k] : undefined; }, obj);
 }
 
+// ===== Language (English / Arabic) =====
+// The language is chosen in index.html before the page draws (URL ?lang=, saved choice,
+// or the visitor's phone/browser language). Dashboard fields ending in "_ar" hold Arabic
+// text; when one is empty, the English text is used.
+var LANG = document.documentElement.lang === 'ar' ? 'ar' : 'en';
+var UI = {
+  en: {
+    'nav.about': 'About', 'nav.skills': 'Skills', 'nav.services': 'Services', 'nav.portfolio': 'Portfolio',
+    'nav.reviews': 'Reviews', 'nav.contact': 'Contact', 'switch': 'عربي',
+    'cv': 'Download CV',
+    'skills.label': 'Expertise', 'skills.title': 'TOOLS & SKILLS',
+    'services.label': 'What I Do', 'services.title': 'SERVICES',
+    'portfolio.label': 'Selected Work', 'portfolio.title': 'PORTFOLIO',
+    'reviews.label': 'Testimonials', 'reviews.title': 'WHAT CLIENTS SAY',
+    'reviews.empty': 'No reviews yet. Worked with me? Be the first to share your experience.',
+    'reviews.leave': 'Leave a review',
+    'contact.label': 'Get in Touch', 'contact.title': "LET'S WORK TOGETHER",
+    'tab.logos': 'Logos', 'tab.branding': 'Brand Identity', 'tab.social': 'Social Media', 'tab.catalog': 'Catalogs',
+    'badge.logo': 'Logo', 'badge.view': 'View', 'badge.flipbook': 'Flipbook', 'badge.posts': '{n} Posts',
+    'count.pages': '{n} Pages', 'count.posts': '{n} posts', 'viewer.pages': '{n} pages', 'viewer.posts': '{n} posts',
+    'more': 'Show more · {n} left',
+    'c.email': 'Email', 'c.whatsapp': 'WhatsApp', 'c.phone': 'Phone', 'c.mobile': 'Phone', 'c.link': 'Link',
+    'rights': 'All Rights Reserved', 'stars': '{n} out of 5 stars',
+    'error': 'Content could not be loaded. (If you opened index.html straight from your computer, use a local server or view the live site.)'
+  },
+  ar: {
+    'nav.about': 'نبذة', 'nav.skills': 'المهارات', 'nav.services': 'الخدمات', 'nav.portfolio': 'الأعمال',
+    'nav.reviews': 'الآراء', 'nav.contact': 'تواصل', 'switch': 'EN',
+    'cv': 'تحميل السيرة الذاتية',
+    'skills.label': 'الخبرة', 'skills.title': 'الأدوات والمهارات',
+    'services.label': 'ماذا أقدّم', 'services.title': 'الخدمات',
+    'portfolio.label': 'أعمال مختارة', 'portfolio.title': 'معرض الأعمال',
+    'reviews.label': 'آراء العملاء', 'reviews.title': 'ماذا يقول العملاء',
+    'reviews.empty': 'لا توجد آراء بعد. عملتَ معي؟ كن أول من يشارك تجربته.',
+    'reviews.leave': 'اترك تقييمك',
+    'contact.label': 'تواصل معي', 'contact.title': 'لنعمل معًا',
+    'tab.logos': 'الشعارات', 'tab.branding': 'الهويات البصرية', 'tab.social': 'السوشيال ميديا', 'tab.catalog': 'الكتالوجات',
+    'badge.logo': 'شعار', 'badge.view': 'عرض', 'badge.flipbook': 'تصفّح', 'badge.posts': '{n} منشور',
+    'count.pages': '{n} صفحة', 'count.posts': '{n} منشور', 'viewer.pages': '{n} صفحة', 'viewer.posts': '{n} منشور',
+    'more': 'عرض المزيد · متبقٍ {n}',
+    'c.email': 'البريد الإلكتروني', 'c.whatsapp': 'واتساب', 'c.phone': 'الهاتف', 'c.mobile': 'الجوال', 'c.link': 'رابط',
+    'rights': 'جميع الحقوق محفوظة', 'stars': '{n} من 5 نجوم',
+    'error': 'تعذّر تحميل المحتوى. يرجى المحاولة لاحقًا.'
+  }
+};
+function T(key, n) {
+  var s = (UI[LANG] && UI[LANG][key]) || UI.en[key] || key;
+  return n == null ? s : s.replace('{n}', n);
+}
+// Text from the dashboard in the current language (falls back to English)
+function tr(obj, key) {
+  if (!obj) return '';
+  if (LANG === 'ar') {
+    var ar = obj[key + '_ar'];
+    if (ar != null && String(ar).trim() !== '') return ar;
+  }
+  return obj[key] == null ? '' : obj[key];
+}
+function switchLang() {
+  var next = LANG === 'ar' ? 'en' : 'ar';
+  try { localStorage.setItem('lang', next); } catch (e) {}
+  try { sessionStorage.setItem('scrollY', String(window.scrollY)); } catch (e) {}
+  var u = new URL(location.href);
+  u.searchParams.set('lang', next);
+  location.replace(u.toString());
+}
+function applyStaticText() {
+  document.querySelectorAll('[data-i18n]').forEach(function (n) { n.textContent = T(n.getAttribute('data-i18n')); });
+  var b = document.getElementById('langToggle');
+  if (b) {
+    b.textContent = T('switch');
+    b.setAttribute('aria-label', LANG === 'ar' ? 'Switch to English' : 'التبديل إلى العربية');
+    b.lang = LANG === 'ar' ? 'en' : 'ar';
+  }
+}
+applyStaticText();
+
 // Portfolio tabs, in this order. Only tabs that have projects are shown.
 var CATEGORIES = [
-  { id: 'logos',    label: 'Logos' },
-  { id: 'branding', label: 'Brand Identity' },
-  { id: 'social',   label: 'Social Media' },
-  { id: 'catalog',  label: 'Catalogs' }
+  { id: 'logos' }, { id: 'branding' }, { id: 'social' }, { id: 'catalog' }
 ];
 var CONTACT_TYPES = {
   email:    { label: 'Email',    icon: '✉️', href: function (v) { return 'mailto:' + v.trim(); } },
@@ -79,20 +153,20 @@ var PROJECTS = {};
 // ===== Build the page from content.json =====
 function render(c) {
   var site = c.site || {}, hero = c.hero || {};
-  if (site.pageTitle) document.title = site.pageTitle;
+  if (tr(site, 'pageTitle')) document.title = tr(site, 'pageTitle');
 
   document.querySelectorAll('[data-text]').forEach(function (n) {
-    var v = get(c, n.getAttribute('data-text'));
-    n.textContent = v == null ? '' : v;
+    var path = n.getAttribute('data-text'), dot = path.lastIndexOf('.');
+    n.textContent = tr(get(c, path.slice(0, dot)), path.slice(dot + 1));
   });
 
   // Hero name: "FIRST <span>LAST</span>"
   var hn = document.getElementById('heroName');
-  hn.textContent = (hero.firstName || '') + ' ';
-  hn.appendChild(el('span', null, hero.lastName || ''));
+  hn.textContent = tr(hero, 'firstName') + ' ';
+  hn.appendChild(el('span', null, tr(hero, 'lastName')));
 
   var photo = document.getElementById('profileImg');
-  setPreview(photo, hero.photo); photo.alt = (hero.firstName || '') + ' ' + (hero.lastName || '');
+  setPreview(photo, hero.photo); photo.alt = tr(hero, 'firstName') + ' ' + tr(hero, 'lastName');
 
   var cv = document.getElementById('cvBtn');
   if (hero.cv) { cv.href = asset(hero.cv); cv.setAttribute('download', asset(hero.cv).split('/').pop()); }
@@ -106,7 +180,7 @@ function render(c) {
     num.setAttribute('data-target', s.number || 0);
     num.setAttribute('data-suffix', s.suffix || '');
     st.appendChild(num);
-    st.appendChild(el('div', 'stat-label', s.label));
+    st.appendChild(el('div', 'stat-label', tr(s, 'label')));
     stats.appendChild(st);
   });
 
@@ -118,7 +192,7 @@ function render(c) {
     if (s.icon) ic.appendChild(img(s.icon, s.name));
     card.appendChild(ic);
     card.appendChild(el('div', 'skill-name', s.name));
-    card.appendChild(el('div', 'skill-level', s.level));
+    card.appendChild(el('div', 'skill-level', tr(s, 'level')));
     skills.appendChild(card);
   });
 
@@ -128,8 +202,8 @@ function render(c) {
     var row = el('article', 'service-row');
     row.appendChild(el('span', 'service-num', String(i + 1).padStart(2, '0')));
     var body = el('div', 'service-body');
-    body.appendChild(el('h3', null, s.title));
-    body.appendChild(el('p', null, s.description));
+    body.appendChild(el('h3', null, tr(s, 'title')));
+    body.appendChild(el('p', null, tr(s, 'description')));
     row.appendChild(body);
     services.appendChild(row);
   });
@@ -141,15 +215,16 @@ function render(c) {
     var images = (p.images || []).filter(Boolean);
     if (!images.length) return;
     var id = 'p' + i, n = images.length, viewer = p.viewer || 'single';
-    var countText = viewer === 'grid' ? n + ' posts' : n + ' Pages';
-    var sub = p.subtitle || '';
+    var title = tr(p, 'title');
+    var countText = viewer === 'grid' ? T('count.posts', n) : T('count.pages', n);
+    var sub = tr(p, 'subtitle');
     if (viewer !== 'single' && n > 1) sub += (viewer === 'grid' ? ' — ' : ' · ') + countText;
-    PROJECTS[id] = { title: p.title, sub: sub, kind: viewer, images: images.map(asset) };
+    PROJECTS[id] = { title: title, sub: sub, kind: viewer, images: images.map(asset) };
     used[p.category] = true;
 
-    var badge = viewer === 'grid' ? n + ' Posts'
-              : viewer === 'flipbook' ? 'Flipbook'
-              : p.category === 'logos' ? 'Logo' : 'View';
+    var badge = viewer === 'grid' ? T('badge.posts', n)
+              : viewer === 'flipbook' ? T('badge.flipbook')
+              : p.category === 'logos' ? T('badge.logo') : T('badge.view');
 
     // Social posts: show every post directly in the grid (no folder card).
     if (viewer === 'grid') {
@@ -159,7 +234,7 @@ function render(c) {
         post.dataset.cat = p.category;
         post.onclick = function () { openImgLightbox(src, srcs, k); };
         var pt = el('div', 'portfolio-thumb');
-        pt.appendChild(imgPreview(src, (p.title || 'Post') + ' ' + (k + 1)));
+        pt.appendChild(imgPreview(src, (title || 'Post') + ' ' + (k + 1)));
         post.appendChild(pt);
         grid.appendChild(post);
       });
@@ -170,10 +245,10 @@ function render(c) {
     item.dataset.cat = p.category;
     item.onclick = function () { openProject(id); };
     var thumb = el('div', 'portfolio-thumb' + (p.category === 'logos' ? ' logo-thumb' : ''));
-    thumb.appendChild(imgPreview(p.thumbnail || images[0], p.title));
+    thumb.appendChild(imgPreview(p.thumbnail || images[0], title));
     thumb.appendChild(el('span', 'thumb-badge', badge));
     var info = el('div', 'portfolio-info');
-    info.appendChild(el('h3', null, p.title));
+    info.appendChild(el('h3', null, title));
     info.appendChild(el('p', null, sub));
     item.appendChild(thumb); item.appendChild(info);
     grid.appendChild(item);
@@ -183,7 +258,7 @@ function render(c) {
   var first = null;
   CATEGORIES.forEach(function (cat) {
     if (!used[cat.id]) return;
-    var b = el('button', 'tab-btn', cat.label);
+    var b = el('button', 'tab-btn', T('tab.' + cat.id));
     b.onclick = function () { filterWork(cat.id, b); };
     tabs.appendChild(b);
     if (!first) first = { id: cat.id, btn: b };
@@ -198,8 +273,12 @@ function render(c) {
     a.href = t.href(ct.value || '');
     if (t.blank) a.target = '_blank';
     a.appendChild(el('div', 'contact-icon', t.icon));
-    a.appendChild(el('div', 'contact-label', ct.label || t.label));
-    a.appendChild(el('div', 'contact-value', ct.value));
+    a.appendChild(el('div', 'contact-label', tr(ct, 'label') || T('c.' + (CONTACT_TYPES[ct.type] ? ct.type : 'link'))));
+    var cv = el('div', 'contact-value');
+    var cvText = el('span', null, ct.value);
+    cvText.dir = 'ltr';                         // numbers/emails never flip in Arabic
+    cv.appendChild(cvText);
+    a.appendChild(cv);
     contact.appendChild(a);
   });
 
@@ -208,10 +287,16 @@ function render(c) {
   // Footer (year updates automatically)
   var f = document.getElementById('footer');
   f.textContent = '© ' + new Date().getFullYear() + ' ';
-  f.appendChild(el('span', null, site.footerName || ''));
-  f.appendChild(document.createTextNode(' — All Rights Reserved'));
+  f.appendChild(el('span', null, tr(site, 'footerName')));
+  f.appendChild(document.createTextNode(' — ' + T('rights')));
 
   startStats();
+
+  // after a language switch, return to where the visitor was
+  try {
+    var y = sessionStorage.getItem('scrollY');
+    if (y != null) { sessionStorage.removeItem('scrollY'); setTimeout(function () { window.scrollTo(0, +y); }, 50); }
+  } catch (e) {}
 }
 
 // ===== Client reviews =====
@@ -221,9 +306,15 @@ var COUNTRIES = {
   dz:'Algeria', tn:'Tunisia', ly:'Libya', sd:'Sudan', tr:'Turkey', us:'USA', gb:'UK', ca:'Canada',
   de:'Germany', fr:'France', it:'Italy', es:'Spain', nl:'Netherlands', se:'Sweden', au:'Australia'
 };
+var COUNTRIES_AR = {
+  ps:'فلسطين', sa:'السعودية', ae:'الإمارات', kw:'الكويت', qa:'قطر', bh:'البحرين', om:'عُمان',
+  jo:'الأردن', eg:'مصر', lb:'لبنان', sy:'سوريا', iq:'العراق', ye:'اليمن', ma:'المغرب',
+  dz:'الجزائر', tn:'تونس', ly:'ليبيا', sd:'السودان', tr:'تركيا', us:'الولايات المتحدة', gb:'المملكة المتحدة', ca:'كندا',
+  de:'ألمانيا', fr:'فرنسا', it:'إيطاليا', es:'إسبانيا', nl:'هولندا', se:'السويد', au:'أستراليا'
+};
 function starsEl(n) {
   var wrap = el('div', 'review-stars');
-  wrap.setAttribute('aria-label', n + ' out of 5 stars');
+  wrap.setAttribute('aria-label', T('stars', n));
   for (var i = 1; i <= 5; i++) wrap.appendChild(el('span', i <= n ? 'star on' : 'star', '★'));
   return wrap;
 }
@@ -251,7 +342,7 @@ function reviewCard(r, i) {
     flag.alt = ''; flag.loading = 'lazy';
     flag.onerror = function () { flag.remove(); };
     meta.appendChild(flag);
-    meta.appendChild(document.createTextNode(COUNTRIES[code] || code.toUpperCase()));
+    meta.appendChild(document.createTextNode((LANG === 'ar' && COUNTRIES_AR[code]) || COUNTRIES[code] || code.toUpperCase()));
     who.appendChild(meta);
   }
   person.appendChild(who);
@@ -358,7 +449,7 @@ function applyFilter() {
   var left = count - FILTER.shown;
   if (left > 0) {
     wrap.style.display = '';
-    document.getElementById('showMoreBtn').textContent = 'Show more · ' + left + ' left';
+    document.getElementById('showMoreBtn').textContent = T('more', left);
   } else {
     wrap.style.display = 'none';
   }
@@ -402,7 +493,7 @@ fetch('content.json', { cache: 'no-cache' })
   .catch(function (err) {
     console.error('Could not load content.json', err);
     document.getElementById('portfolioGrid').textContent =
-      'Content could not be loaded. (If you opened index.html straight from your computer, use a local server or view the live site.)';
+      T('error');
   });
 
 // ===== Unified Project Viewer =====
@@ -464,7 +555,7 @@ function gridRender() {
     cell.onclick = function(){ openImgLightbox(src, V.images, i); };
     c.appendChild(cell);
   });
-  document.getElementById('viewerCounter').textContent = V.images.length + ' posts';
+  document.getElementById('viewerCounter').textContent = T('viewer.posts', V.images.length);
 }
 
 // ---- image lightbox (single post, with prev/next through its set) ----
@@ -537,7 +628,7 @@ function scrollRender() {
     im.decoding = 'async';
     c.appendChild(im);
   });
-  document.getElementById('viewerCounter').textContent = V.images.length + ' pages';
+  document.getElementById('viewerCounter').textContent = T('viewer.pages', V.images.length);
 }
 
 function closeViewer() {

@@ -1,16 +1,24 @@
 {
   "site": {
     "pageTitle": "Ahmed Ayash - Senior Graphic Designer",
+    "pageTitle_ar": "أحمد عياش — مصمم جرافيك أول",
     "navLogo": "AHMAD",
+    "navLogo_ar": "أحمد",
     "footerName": "Ahmad Ayash",
+    "footerName_ar": "أحمد عياش",
     "reviewsApi": "https://script.google.com/macros/s/AKfycbw1r2_F_E4FU79bIu8ESsajaEJ1f5Sutw9qH9CzrNQ-_5N7t_t5i8ufON6QXYDzjZvf/exec"
   },
   "hero": {
     "tag": "Available for Projects",
+    "tag_ar": "متاح لمشاريع جديدة",
     "firstName": "AHMAD",
+    "firstName_ar": "أحمد",
     "lastName": "AYASH",
+    "lastName_ar": "عياش",
     "title": "Senior Graphic Designer",
+    "title_ar": "مصمم جرافيك أول",
     "description": "With over 8 years of experience in visual communication and brand development, I specialize in creating comprehensive brand identities, infographics, social media campaigns, and print design. I translate concepts into impactful visual solutions that strengthen brand presence and engage target audiences.",
+    "description_ar": "بخبرة تتجاوز 8 سنوات في التواصل البصري وبناء العلامات التجارية، أتخصص في تصميم الهويات البصرية المتكاملة والإنفوجرافيك وحملات السوشيال ميديا والتصاميم المطبوعة. أحوّل الأفكار إلى حلول بصرية مؤثرة تعزّز حضور العلامة التجارية وتجذب جمهورها.",
     "photo": "/images/332.jpg.jpeg",
     "cv": "/documents/Ahmad Ayash CV.pdf"
   },
@@ -18,77 +26,98 @@
     {
       "number": 179,
       "suffix": "+",
-      "label": "Projects"
+      "label": "Projects",
+      "label_ar": "مشروع"
     },
     {
       "number": 8,
       "suffix": "+",
-      "label": "Years Experience"
+      "label": "Years Experience",
+      "label_ar": "سنوات خبرة"
     },
     {
       "number": 94,
       "suffix": "+",
-      "label": "Clients"
+      "label": "Clients",
+      "label_ar": "عميل"
     },
     {
       "number": 5,
       "suffix": "+",
-      "label": "Design Tools"
+      "label": "Design Tools",
+      "label_ar": "أدوات تصميم"
     }
   ],
   "skills": [
     {
       "name": "Adobe Illustrator",
       "level": "Expert",
+      "level_ar": "خبير",
       "icon": "/images/illustrator.png"
     },
     {
       "name": "Adobe Photoshop",
       "level": "Expert",
+      "level_ar": "خبير",
       "icon": "/images/photoshop.png"
     },
     {
       "name": "Adobe InDesign",
       "level": "Expert",
+      "level_ar": "خبير",
       "icon": "/images/indesign.png"
     },
     {
       "name": "Canva",
       "level": "Expert",
+      "level_ar": "خبير",
       "icon": "/images/canva.png"
     },
     {
       "name": "PowerPoint",
       "level": "Expert",
+      "level_ar": "خبير",
       "icon": "/images/powerpoint.png"
     }
   ],
   "services": [
     {
       "title": "Brand Identity Design",
-      "description": "Logos, visual systems, and full brand guidelines that give a company one consistent, recognizable voice across every touchpoint."
+      "title_ar": "تصميم الهوية البصرية",
+      "description": "Logos, visual systems, and full brand guidelines that give a company one consistent, recognizable voice across every touchpoint.",
+      "description_ar": "شعارات وأنظمة بصرية وأدلة هوية متكاملة تمنح الشركة صوتًا واحدًا ثابتًا ومميزًا في كل نقطة تواصل مع جمهورها."
     },
     {
       "title": "Social Media Design",
-      "description": "Scroll-stopping posts, carousels, and campaign templates built to keep a brand active and on-message across platforms."
+      "title_ar": "تصميم السوشيال ميديا",
+      "description": "Scroll-stopping posts, carousels, and campaign templates built to keep a brand active and on-message across platforms.",
+      "description_ar": "منشورات وكاروسيل وقوالب حملات تلفت الانتباه وتُبقي العلامة التجارية حاضرة ومتّسقة على جميع المنصات."
     },
     {
       "title": "Infographics",
-      "description": "Complex data and ideas turned into clear, attractive visuals that people actually understand at a glance."
+      "title_ar": "الإنفوجرافيك",
+      "description": "Complex data and ideas turned into clear, attractive visuals that people actually understand at a glance.",
+      "description_ar": "تحويل البيانات والأفكار المعقّدة إلى تصاميم واضحة وجذابة يفهمها الناس من النظرة الأولى."
     },
     {
       "title": "Print Design",
-      "description": "Catalogs, brochures, and print-ready collateral prepared with the right specs, color, and detail for professional production."
+      "title_ar": "التصميم المطبوع",
+      "description": "Catalogs, brochures, and print-ready collateral prepared with the right specs, color, and detail for professional production.",
+      "description_ar": "كتالوجات وبروشورات ومطبوعات جاهزة للطباعة بالمقاسات والألوان والتفاصيل الصحيحة لإنتاج احترافي."
     },
     {
       "title": "AI-Assisted Creative Design",
-      "description": "Modern workflows that blend AI tools with hands-on craft to produce concepts and assets faster, without losing the human touch."
+      "title_ar": "التصميم الإبداعي بمساعدة الذكاء الاصطناعي",
+      "description": "Modern workflows that blend AI tools with hands-on craft to produce concepts and assets faster, without losing the human touch.",
+      "description_ar": "أساليب عمل حديثة تمزج أدوات الذكاء الاصطناعي بالحِرفية اليدوية لإنجاز الأفكار والتصاميم بسرعة أكبر دون فقدان اللمسة الإنسانية."
     }
   ],
   "projects": [
     {
       "title": "Golden Wood",
+      "title_ar": "",
       "subtitle": "Wood Industry — UAE",
+      "subtitle_ar": "صناعة الأخشاب — الإمارات",
       "category": "logos",
       "viewer": "single",
       "images": [
@@ -97,7 +126,9 @@
     },
     {
       "title": "Jeddah Chocolate",
+      "title_ar": "",
       "subtitle": "Premium Chocolate Retail",
+      "subtitle_ar": "شوكولاتة فاخرة — تجزئة",
       "category": "logos",
       "viewer": "single",
       "images": [
@@ -106,7 +137,9 @@
     },
     {
       "title": "Sanad AI",
+      "title_ar": "",
       "subtitle": "Receivables & Payables Platform — KSA",
+      "subtitle_ar": "منصة الذمم المدينة والدائنة — السعودية",
       "category": "logos",
       "viewer": "single",
       "images": [
@@ -115,7 +148,9 @@
     },
     {
       "title": "Jelly Node",
+      "title_ar": "",
       "subtitle": "Digital Services — Palestine",
+      "subtitle_ar": "خدمات رقمية — فلسطين",
       "category": "logos",
       "viewer": "single",
       "images": [
@@ -124,7 +159,9 @@
     },
     {
       "title": "AMD",
+      "title_ar": "",
       "subtitle": "Real Estate Development — UAE",
+      "subtitle_ar": "التطوير العقاري — الإمارات",
       "category": "logos",
       "viewer": "single",
       "images": [
@@ -133,7 +170,9 @@
     },
     {
       "title": "Lamorya",
+      "title_ar": "",
       "subtitle": "Luxury Perfumes — Oman",
+      "subtitle_ar": "عطور فاخرة — عُمان",
       "category": "logos",
       "viewer": "single",
       "images": [
@@ -142,7 +181,9 @@
     },
     {
       "title": "Social Media",
+      "title_ar": "السوشيال ميديا",
       "subtitle": "Instagram & campaign designs",
+      "subtitle_ar": "تصاميم إنستغرام وحملات إعلانية",
       "category": "social",
       "viewer": "grid",
       "images": [
@@ -172,7 +213,9 @@
     },
     {
       "title": "Rawabet Al-Sina'a",
+      "title_ar": "روابط الصناعة",
       "subtitle": "Saudi Ministry of Industry — Brand Identity",
+      "subtitle_ar": "وزارة الصناعة والثروة المعدنية السعودية — هوية بصرية",
       "category": "branding",
       "viewer": "scroll",
       "images": [
@@ -215,7 +258,9 @@
     },
     {
       "title": "Sanad AI",
+      "title_ar": "",
       "subtitle": "Brand Identity",
+      "subtitle_ar": "هوية بصرية",
       "category": "branding",
       "viewer": "scroll",
       "images": [
@@ -249,7 +294,9 @@
     },
     {
       "title": "Jelly Node",
+      "title_ar": "",
       "subtitle": "Brand Identity",
+      "subtitle_ar": "هوية بصرية",
       "category": "branding",
       "viewer": "scroll",
       "images": [
@@ -264,7 +311,9 @@
     },
     {
       "title": "Deemah",
+      "title_ar": "",
       "subtitle": "Brand Identity",
+      "subtitle_ar": "هوية بصرية",
       "category": "branding",
       "viewer": "scroll",
       "images": [
@@ -291,7 +340,9 @@
     },
     {
       "title": "AMD",
+      "title_ar": "",
       "subtitle": "Brand Identity",
+      "subtitle_ar": "هوية بصرية",
       "category": "branding",
       "viewer": "scroll",
       "images": [
@@ -312,7 +363,9 @@
     },
     {
       "title": "Golden Wood",
+      "title_ar": "",
       "subtitle": "Product Catalog",
+      "subtitle_ar": "كتالوج منتجات",
       "category": "catalog",
       "viewer": "flipbook",
       "images": [
@@ -428,7 +481,9 @@
     },
     {
       "title": "SALB",
+      "title_ar": "",
       "subtitle": "Strength & Training Equipment - KSA",
+      "subtitle_ar": "معدات القوة والتدريب — السعودية",
       "category": "logos",
       "viewer": "single",
       "images": [
