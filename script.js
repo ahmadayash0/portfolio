@@ -202,9 +202,6 @@ var COUNTRIES = {
   dz:'Algeria', tn:'Tunisia', ly:'Libya', sd:'Sudan', tr:'Turkey', us:'USA', gb:'UK', ca:'Canada',
   de:'Germany', fr:'France', it:'Italy', es:'Spain', nl:'Netherlands', se:'Sweden', au:'Australia'
 };
-var REVIEWS = { cards: [], shown: 0 };
-function reviewsPage() { return window.matchMedia('(max-width: 600px)').matches ? 3 : 6; }
-
 function starsEl(n) {
   var wrap = el('div', 'review-stars');
   wrap.setAttribute('aria-label', n + ' out of 5 stars');
@@ -214,56 +211,67 @@ function starsEl(n) {
 function initials(name) {
   return (name || '?').trim().split(/\s+/).slice(0, 2).map(function (w) { return w[0]; }).join('').toUpperCase();
 }
+function reviewCard(r, i) {
+  var card = el('article', 'review-card');
 
+  // top: client + rating badge
+  var head = el('div', 'review-head');
+  var person = el('div', 'review-person');
+  var av = el('div', 'review-avatar');
+  if (r.photo) av.appendChild(img(r.photo, r.name)); else av.textContent = initials(r.name);
+  person.appendChild(av);
+  var who = el('div', 'review-who');
+  who.appendChild(el('div', 'review-name', r.name || ''));
+  if (r.role) who.appendChild(el('div', 'review-role', r.role));
+  var code = (r.country || '').toLowerCase();
+  if (code) {
+    var meta = el('div', 'review-meta');
+    var flag = document.createElement('img');
+    flag.className = 'review-flag';
+    flag.src = 'images/flags/' + code + '.svg';
+    flag.alt = ''; flag.loading = 'lazy';
+    flag.onerror = function () { flag.remove(); };
+    meta.appendChild(flag);
+    meta.appendChild(document.createTextNode(COUNTRIES[code] || code.toUpperCase()));
+    who.appendChild(meta);
+  }
+  person.appendChild(who);
+  head.appendChild(person);
+
+  var rating = Math.min(parseInt(r.rating, 10) || 0, 5);
+  card.appendChild(head);
+
+  if (rating > 0) card.appendChild(starsEl(rating));
+  card.appendChild(el('p', 'review-text', r.opinion || ''));
+  return card;
+}
+
+// Moving strip: the cards slide in an endless loop (pauses on hover/touch).
 function renderReviews(list) {
   list = list.filter(function (r) { return r && (r.name || r.opinion); });
   if (!list.length) return;                       // section stays hidden
   ['reviews', 'reviewsDivider'].forEach(function (id) { document.getElementById(id).style.display = ''; });
   document.getElementById('navReviews').style.display = '';
 
-  var grid = document.getElementById('reviewsGrid');
-  list.forEach(function (r) {
-    var card = el('article', 'review-card');
-    var top = el('div', 'review-top');
-    top.appendChild(el('span', 'review-quote', '“'));
-    var rating = parseInt(r.rating, 10);
-    if (rating > 0) top.appendChild(starsEl(Math.min(rating, 5)));
-    card.appendChild(top);
-    card.appendChild(el('p', 'review-text', r.opinion || ''));
-
-    var person = el('div', 'review-person');
-    var av = el('div', 'review-avatar');
-    if (r.photo) av.appendChild(img(r.photo, r.name)); else av.textContent = initials(r.name);
-    person.appendChild(av);
-    var who = el('div', 'review-who');
-    who.appendChild(el('div', 'review-name', r.name || ''));
-    if (r.role) who.appendChild(el('div', 'review-role', r.role));
-    var code = (r.country || '').toLowerCase();
-    if (code) {
-      var c = el('div', 'review-country');
-      var flag = document.createElement('img');
-      flag.className = 'review-flag';
-      flag.src = 'images/flags/' + code + '.svg';
-      flag.alt = ''; flag.loading = 'lazy';
-      flag.onerror = function () { flag.remove(); };
-      c.appendChild(flag);
-      c.appendChild(document.createTextNode(COUNTRIES[code] || code.toUpperCase()));
-      who.appendChild(c);
-    }
-    person.appendChild(who);
-    card.appendChild(person);
-    grid.appendChild(card);
-    REVIEWS.cards.push(card);
+  var track = document.getElementById('reviewsTrack');
+  // Repeat short lists so the strip is always full, then add one identical
+  // copy so the loop joins seamlessly.
+  var half = [];
+  while (half.length < 6) half = half.concat(list);
+  [false, true].forEach(function (isCopy) {
+    half.forEach(function (r, i) {
+      var card = reviewCard(r, i);
+      if (isCopy) card.setAttribute('aria-hidden', 'true');
+      track.appendChild(card);
+    });
   });
-  REVIEWS.shown = reviewsPage();
-  applyReviews();
-}
-function reviewsMore() { REVIEWS.shown += reviewsPage(); applyReviews(); }
-function applyReviews() {
-  REVIEWS.cards.forEach(function (c, i) { c.style.display = i < REVIEWS.shown ? '' : 'none'; });
-  var left = REVIEWS.cards.length - REVIEWS.shown;
-  document.getElementById('reviewsMoreWrap').style.display = left > 0 ? '' : 'none';
-  if (left > 0) document.getElementById('reviewsMoreBtn').textContent = 'Show more · ' + left + ' left';
+  // ~7 seconds per card keeps it calm and readable
+  track.style.animationDuration = (half.length * 7) + 's';
+
+  // pause while a finger is on it (phones)
+  var marquee = track.parentElement;
+  marquee.addEventListener('touchstart', function () { marquee.classList.add('paused'); }, { passive: true });
+  marquee.addEventListener('touchend', function () { marquee.classList.remove('paused'); }, { passive: true });
 }
 
 // ===== Tab filter + "Show more" =====

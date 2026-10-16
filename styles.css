@@ -1181,91 +1181,183 @@ img[loading="lazy"] { will-change: auto; }
 }
 
 /* ===== Client reviews ===== */
-.reviews-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 25px;
+/* Moving strip */
+.reviews-marquee {
+  overflow: hidden;
+  margin: 0 -60px;                 /* run edge to edge of the section */
+  padding: 10px 0 20px;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+          mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+}
+.reviews-track {
+  display: flex;
+  gap: 24px;
+  width: max-content;
+  animation: reviews-scroll 60s linear infinite;
+  padding-left: 24px;
+}
+.reviews-marquee:hover .reviews-track,
+.reviews-marquee.paused .reviews-track { animation-play-state: paused; }
+@keyframes reviews-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
 }
 .review-card {
-  background: var(--dark);
-  border: 1px solid var(--dark-3);
-  border-radius: 16px;
-  padding: 30px 28px 26px;
+  position: relative;
+  overflow: hidden;
+  width: 380px;
+  flex: 0 0 380px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  transition: border-color 0.3s, transform 0.3s;
+  gap: 22px;
+  padding: 28px 28px 26px;
+  border-radius: 22px;
+  background: linear-gradient(160deg, #181818 0%, #0e0e0e 100%);
+  border: 1px solid rgba(255,255,255,0.06);
+  box-shadow: 0 20px 40px -24px rgba(0,0,0,0.8);
+  transition: transform 0.35s, border-color 0.35s, box-shadow 0.35s;
+}
+/* soft neon glow in the corner */
+.review-card::before {
+  content: '';
+  position: absolute;
+  top: -80px;
+  right: -80px;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(200,255,0,0.14), transparent 70%);
+  pointer-events: none;
+}
+/* big decorative quote mark */
+.review-card::after {
+  content: '\201D';
+  position: absolute;
+  right: 18px;
+  bottom: -70px;
+  font-family: 'Bebas Neue', Georgia, serif;
+  font-size: 220px;
+  line-height: 1;
+  color: rgba(200,255,0,0.07);
+  pointer-events: none;
 }
 .review-card:hover {
-  border-color: rgba(200,255,0,0.3);
-  transform: translateY(-3px);
+  transform: translateY(-6px);
+  border-color: rgba(200,255,0,0.35);
+  box-shadow: 0 24px 50px -20px rgba(200,255,0,0.18);
 }
-.review-top {
+.review-head {
+  position: relative;
+  z-index: 1;
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: flex-start;
-}
-.review-quote {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 64px;
-  line-height: 0.6;
-  color: var(--neon);
-  height: 28px;
-}
-.review-stars { display: flex; gap: 3px; font-size: 16px; }
-.review-stars .star { color: var(--dark-3); }
-.review-stars .star.on { color: var(--neon); }
-.review-text {
-  font-size: 15px;
-  line-height: 1.75;
-  color: var(--gray-light);
-  flex: 1;
-  white-space: pre-line;
+  gap: 12px;
 }
 .review-person {
   display: flex;
   align-items: center;
   gap: 14px;
-  padding-top: 20px;
-  border-top: 1px solid var(--dark-3);
+  min-width: 0;
 }
 .review-avatar {
-  width: 52px;
-  height: 52px;
-  flex: 0 0 52px;
+  width: 54px;
+  height: 54px;
+  flex: 0 0 54px;
   border-radius: 50%;
   overflow: hidden;
-  background: var(--dark-2);
-  border: 2px solid rgba(200,255,0,0.35);
+  background: var(--dark-3);
+  box-shadow: 0 0 0 2px var(--black), 0 0 0 4px var(--neon);
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--neon);
   font-weight: 600;
-  font-size: 16px;
+  font-size: 17px;
   letter-spacing: 1px;
 }
 .review-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .review-who { min-width: 0; }
-.review-name { font-size: 15px; font-weight: 600; color: var(--white); }
-.review-role { font-size: 12px; color: var(--gray); margin-top: 2px; }
-.review-country {
+.review-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--white);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.review-meta {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 6px;
+  margin-top: 4px;
   font-size: 12px;
   color: var(--gray);
-  margin-top: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .review-flag {
-  width: 20px;
-  height: 14px;
+  width: 18px;
+  height: 13px;
+  flex: 0 0 18px;
   object-fit: cover;
   border-radius: 2px;
-  box-shadow: 0 0 0 1px rgba(255,255,255,0.08);
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.1);
+}
+.review-role {
+  margin-top: 3px;
+  font-size: 12px;
+  color: var(--gray-light);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.review-rating {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex: 0 0 auto;
+  padding: 6px 11px;
+  border-radius: 30px;
+  background: rgba(200,255,0,0.1);
+  border: 1px solid rgba(200,255,0,0.3);
+  color: var(--neon);
+  font-size: 13px;
+  font-weight: 600;
+}
+.review-rating-star { font-size: 12px; }
+.review-text {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 1.75;
+  color: #d6d6d6;
+  white-space: pre-line;
+}
+.review-stars { position: relative; z-index: 1; display: flex; gap: 4px; font-size: 17px; margin-bottom: -8px; }
+.review-stars .star { color: rgba(255,255,255,0.12); }
+.review-stars .star.on { color: var(--neon); }
+
+
+@media (max-width: 900px) {
+  .reviews-marquee { margin: 0 -25px; }
 }
 @media (max-width: 600px) {
-  .reviews-grid { grid-template-columns: 1fr; gap: 16px; }
-  .review-card { padding: 24px 20px 20px; gap: 16px; }
-  .review-text { font-size: 14px; }
+  .reviews-marquee { margin: 0 -20px; }
+  .reviews-track { gap: 14px; padding-left: 14px; }
+  .review-card { width: 290px; flex-basis: 290px; padding: 22px 20px 20px; gap: 18px; border-radius: 18px; }
+  .review-text { font-size: 14.5px; }
+  .review-avatar { width: 46px; height: 46px; flex-basis: 46px; font-size: 15px; }
+}
+
+/* People who prefer less motion: no animation, swipe/scroll sideways instead */
+@media (prefers-reduced-motion: reduce) {
+  .reviews-marquee { overflow-x: auto; -webkit-mask-image: none; mask-image: none; }
+  .reviews-track { animation: none; }
+}
+@media (max-width: 400px) {
+  .reviews-marquee { margin: 0 -15px; }
 }
