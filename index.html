@@ -60,6 +60,7 @@
     <li><a href="#skills">Skills</a></li>
     <li><a href="#services">Services</a></li>
     <li><a href="#portfolio">Portfolio</a></li>
+    <li id="navReviews" style="display:none"><a href="#reviews">Reviews</a></li>
     <li><a href="#contact">Contact</a></li>
    </ul>
    <div class="menu-toggle" onclick="toggleMenu()"><span></span><span></span><span></span></div>
@@ -115,6 +116,17 @@
    <div class="portfolio-tabs" id="portfolioTabs"></div>
    <div class="portfolio-grid" id="portfolioGrid"></div>
    <div class="show-more-wrap" id="showMoreWrap" style="display:none"><button class="show-more-btn" id="showMoreBtn" onclick="showMore()">Show more</button></div>
+  </section>
+  <div class="divider"></div>
+  <!-- CLIENT REVIEWS (filled from content.json → reviews; hidden when empty) -->
+  <div class="divider" id="reviewsDivider" style="display:none"></div>
+  <section class="fade-in" id="reviews" style="display:none">
+   <div class="section-header">
+    <div class="section-label">Testimonials</div>
+    <h2 class="section-title">WHAT CLIENTS SAY</h2>
+   </div>
+   <div class="reviews-grid" id="reviewsGrid"></div>
+   <div class="show-more-wrap" id="reviewsMoreWrap" style="display:none"><button class="show-more-btn" id="reviewsMoreBtn" onclick="reviewsMore()">Show more</button></div>
   </section>
   <div class="divider"></div>
   <!-- CONTACT -->

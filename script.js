@@ -184,6 +184,8 @@ function render(c) {
     contact.appendChild(a);
   });
 
+  renderReviews(c.reviews || []);
+
   // Footer (year updates automatically)
   var f = document.getElementById('footer');
   f.textContent = '© ' + new Date().getFullYear() + ' ';
@@ -191,6 +193,77 @@ function render(c) {
   f.appendChild(document.createTextNode(' — All Rights Reserved'));
 
   startStats();
+}
+
+// ===== Client reviews =====
+var COUNTRIES = {
+  ps:'Palestine', sa:'Saudi Arabia', ae:'UAE', kw:'Kuwait', qa:'Qatar', bh:'Bahrain', om:'Oman',
+  jo:'Jordan', eg:'Egypt', lb:'Lebanon', sy:'Syria', iq:'Iraq', ye:'Yemen', ma:'Morocco',
+  dz:'Algeria', tn:'Tunisia', ly:'Libya', sd:'Sudan', tr:'Turkey', us:'USA', gb:'UK', ca:'Canada',
+  de:'Germany', fr:'France', it:'Italy', es:'Spain', nl:'Netherlands', se:'Sweden', au:'Australia'
+};
+var REVIEWS = { cards: [], shown: 0 };
+function reviewsPage() { return window.matchMedia('(max-width: 600px)').matches ? 3 : 6; }
+
+function starsEl(n) {
+  var wrap = el('div', 'review-stars');
+  wrap.setAttribute('aria-label', n + ' out of 5 stars');
+  for (var i = 1; i <= 5; i++) wrap.appendChild(el('span', i <= n ? 'star on' : 'star', '★'));
+  return wrap;
+}
+function initials(name) {
+  return (name || '?').trim().split(/\s+/).slice(0, 2).map(function (w) { return w[0]; }).join('').toUpperCase();
+}
+
+function renderReviews(list) {
+  list = list.filter(function (r) { return r && (r.name || r.opinion); });
+  if (!list.length) return;                       // section stays hidden
+  ['reviews', 'reviewsDivider'].forEach(function (id) { document.getElementById(id).style.display = ''; });
+  document.getElementById('navReviews').style.display = '';
+
+  var grid = document.getElementById('reviewsGrid');
+  list.forEach(function (r) {
+    var card = el('article', 'review-card');
+    var top = el('div', 'review-top');
+    top.appendChild(el('span', 'review-quote', '“'));
+    var rating = parseInt(r.rating, 10);
+    if (rating > 0) top.appendChild(starsEl(Math.min(rating, 5)));
+    card.appendChild(top);
+    card.appendChild(el('p', 'review-text', r.opinion || ''));
+
+    var person = el('div', 'review-person');
+    var av = el('div', 'review-avatar');
+    if (r.photo) av.appendChild(img(r.photo, r.name)); else av.textContent = initials(r.name);
+    person.appendChild(av);
+    var who = el('div', 'review-who');
+    who.appendChild(el('div', 'review-name', r.name || ''));
+    if (r.role) who.appendChild(el('div', 'review-role', r.role));
+    var code = (r.country || '').toLowerCase();
+    if (code) {
+      var c = el('div', 'review-country');
+      var flag = document.createElement('img');
+      flag.className = 'review-flag';
+      flag.src = 'images/flags/' + code + '.svg';
+      flag.alt = ''; flag.loading = 'lazy';
+      flag.onerror = function () { flag.remove(); };
+      c.appendChild(flag);
+      c.appendChild(document.createTextNode(COUNTRIES[code] || code.toUpperCase()));
+      who.appendChild(c);
+    }
+    person.appendChild(who);
+    card.appendChild(person);
+    grid.appendChild(card);
+    REVIEWS.cards.push(card);
+  });
+  REVIEWS.shown = reviewsPage();
+  applyReviews();
+}
+function reviewsMore() { REVIEWS.shown += reviewsPage(); applyReviews(); }
+function applyReviews() {
+  REVIEWS.cards.forEach(function (c, i) { c.style.display = i < REVIEWS.shown ? '' : 'none'; });
+  var left = REVIEWS.cards.length - REVIEWS.shown;
+  document.getElementById('reviewsMoreWrap').style.display = left > 0 ? '' : 'none';
+  if (left > 0) document.getElementById('reviewsMoreBtn').textContent = 'Show more · ' + left + ' left';
 }
 
 // ===== Tab filter + "Show more" =====

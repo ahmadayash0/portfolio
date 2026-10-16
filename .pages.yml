@@ -103,6 +103,61 @@ content:
             type: image
             options: { media: images }
 
+      - name: reviews
+        label: Client reviews
+        description: Shown near the end of the site. The section stays hidden until you add the first review.
+        type: object
+        list: true
+        fields:
+          - { name: name, label: Client name, type: string, required: true }
+          - { name: role, label: "Company / job title (optional)", type: string }
+          - { name: photo, label: Client photo (optional, square looks best), type: image, options: { media: images } }
+          - name: country
+            label: Country
+            type: select
+            options:
+              values:
+                - { name: ps, label: Palestine }
+                - { name: sa, label: Saudi Arabia }
+                - { name: ae, label: UAE }
+                - { name: kw, label: Kuwait }
+                - { name: qa, label: Qatar }
+                - { name: bh, label: Bahrain }
+                - { name: om, label: Oman }
+                - { name: jo, label: Jordan }
+                - { name: eg, label: Egypt }
+                - { name: lb, label: Lebanon }
+                - { name: sy, label: Syria }
+                - { name: iq, label: Iraq }
+                - { name: ye, label: Yemen }
+                - { name: ma, label: Morocco }
+                - { name: dz, label: Algeria }
+                - { name: tn, label: Tunisia }
+                - { name: ly, label: Libya }
+                - { name: sd, label: Sudan }
+                - { name: tr, label: Turkey }
+                - { name: us, label: USA }
+                - { name: gb, label: UK }
+                - { name: ca, label: Canada }
+                - { name: de, label: Germany }
+                - { name: fr, label: France }
+                - { name: it, label: Italy }
+                - { name: es, label: Spain }
+                - { name: nl, label: Netherlands }
+                - { name: se, label: Sweden }
+                - { name: au, label: Australia }
+          - { name: opinion, label: Their review, type: text, required: true }
+          - name: rating
+            label: Rating
+            type: select
+            options:
+              values:
+                - { name: "5", label: "★★★★★  5" }
+                - { name: "4", label: "★★★★  4" }
+                - { name: "3", label: "★★★  3" }
+                - { name: "2", label: "★★  2" }
+                - { name: "1", label: "★  1" }
+
       - name: contact
         label: Contact
         type: object
