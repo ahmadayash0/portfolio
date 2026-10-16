@@ -25,3 +25,14 @@ Text you wrote yourself in both languages is never changed, and names are not tr
 
 ## Client reviews
 Clients can send a review from the **Leave a review** button. New reviews go to a Google Sheet; tick **Approved** in the sheet and the review appears on the site.
+
+## Showing up on Google
+The site is set up so Google can find it when people search for "Ahmad Ayash", "Ahmed Ayash" or "أحمد عياش".
+
+- Google Search Console shows how many people found the site on Google and what they searched for: https://search.google.com/search-console
+- New sites can take a few days to two weeks to appear in Google results.
+- To get your own access, ask Mona to add you: Settings → Users and permissions → Add user.
+
+## Link preview
+When the site link is shared on WhatsApp, LinkedIn, Facebook or X, it shows a card with Ahmad's photo, name and title (the image is `og-image.jpg`).
+If an old link shows no picture, send it as `https://ahmadayash0.github.io/portfolio/?v=2` (WhatsApp remembers old previews).
