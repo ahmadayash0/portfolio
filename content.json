@@ -435,6 +435,29 @@
       ]
     }
   ],
+  "reviews": [
+    {
+      "name": "Sample Client 1",
+      "role": "Placeholder",
+      "country": "sa",
+      "opinion": "This is a sample review to preview the design. Replace it with a real client review from the dashboard (Portfolio → Client reviews).",
+      "rating": "5"
+    },
+    {
+      "name": "Sample Client 2",
+      "role": "Placeholder",
+      "country": "ae",
+      "opinion": "This is a sample review to preview the design. Replace it with a real client review from the dashboard (Portfolio → Client reviews).",
+      "rating": "5"
+    },
+    {
+      "name": "Sample Client 3",
+      "role": "Placeholder",
+      "country": "ps",
+      "opinion": "This is a sample review to preview the design. Replace it with a real client review from the dashboard (Portfolio → Client reviews).",
+      "rating": "4"
+    }
+  ],
   "contact": [
     {
       "type": "email",
