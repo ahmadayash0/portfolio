@@ -117,6 +117,10 @@ function tr(obj, key) {
   }
   return obj[key] == null ? '' : obj[key];
 }
+// Visitor stats: counts clicks on projects, CV, contact (shows in the GoatCounter dashboard)
+function track(name) {
+  try { if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: name, title: name, event: true }); } catch (e) {}
+}
 function switchLang() {
   var next = LANG === 'ar' ? 'en' : 'ar';
   try { localStorage.setItem('lang', next); } catch (e) {}
@@ -169,7 +173,7 @@ function render(c) {
   setPreview(photo, hero.photo); photo.alt = tr(hero, 'firstName') + ' ' + tr(hero, 'lastName');
 
   var cv = document.getElementById('cvBtn');
-  if (hero.cv) { cv.href = asset(hero.cv); cv.setAttribute('download', asset(hero.cv).split('/').pop()); }
+  if (hero.cv) { cv.href = asset(hero.cv); cv.setAttribute('download', asset(hero.cv).split('/').pop()); cv.onclick = function () { track('Download CV'); }; }
   else cv.style.display = 'none';
 
   // Stats
@@ -272,6 +276,7 @@ function render(c) {
     var a = el('a', 'contact-card');
     a.href = t.href(ct.value || '');
     if (t.blank) a.target = '_blank';
+    a.addEventListener('click', function () { track('Contact: ' + (ct.type || 'link')); });
     a.appendChild(el('div', 'contact-icon', t.icon));
     a.appendChild(el('div', 'contact-label', tr(ct, 'label') || T('c.' + (CONTACT_TYPES[ct.type] ? ct.type : 'link'))));
     var cv = el('div', 'contact-value');
@@ -363,7 +368,8 @@ function loadReviews(c) {
   var own = c.reviews || [];
   var api = ((c.site && c.site.reviewsApi) || '').trim();
   if (!api) { renderReviews(own); return; }
-  document.getElementById('reviewsCta').style.display = '';   // form is connected → show the button
+  document.getElementById('reviewsCta').style.display = '';
+  document.querySelector('#reviewsCta a').onclick = function () { track('Leave a review (button)'); };   // form is connected → show the button
 
   var KEY = 'portfolioClientReviews', cached = [];
   try { cached = JSON.parse(localStorage.getItem(KEY) || '[]') || []; } catch (e) { cached = []; }
@@ -503,6 +509,7 @@ function openProject(id) {
   var p = PROJECTS[id];
   if (!p) return;
   V.id = id; V.kind = p.kind; V.images = p.images.slice(); V.idx = 0;
+  track('Project: ' + p.title);
   document.getElementById('viewerTitle').textContent = p.title;
   document.getElementById('viewerSub').textContent = p.sub;
 

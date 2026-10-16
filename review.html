@@ -258,6 +258,7 @@
       if (data.opinion.length < 5) return showError(T('errText'));
       if (!API) return showError(T('errClosed'));
 
+      try { if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: 'Review submitted', title: 'Review submitted', event: true }); } catch (e) {}
       // Show the thank-you screen right away; the review keeps sending in the background
       // (Google can take a few seconds to wake up). keepalive lets it finish even if the tab is closed.
       btn.disabled = true;
@@ -282,5 +283,7 @@
     });
   })();
   </script>
+  <!-- Visitor stats (GoatCounter: free, no cookies). Dashboard: https://ahmadayash.goatcounter.com -->
+  <script data-goatcounter="https://ahmadayash.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
  </body>
 </html>
