@@ -191,3 +191,5 @@ content:
           - { name: value, label: "Email / number / URL", type: string }
           - { name: label, label: Custom label (optional), type: string }
           - { name: label_ar, label: Custom label (Arabic, optional), type: string }
+          - { name: message, label: "WhatsApp first message (optional)", type: text, description: "The message already typed when a client opens WhatsApp. Leave empty for the default." }
+          - { name: message_ar, label: "WhatsApp first message (Arabic, optional)", type: text }

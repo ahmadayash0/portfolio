@@ -80,6 +80,7 @@ var UI = {
     'badge.logo': 'Logo', 'badge.view': 'View', 'badge.flipbook': 'Flipbook', 'badge.posts': '{n} Posts',
     'count.pages': '{n} Pages', 'count.posts': '{n} posts', 'viewer.pages': '{n} pages', 'viewer.posts': '{n} posts',
     'more': 'Show more · {n} left',
+    'c.waMsg': "Hi Ahmad! I saw your portfolio and I'd like to talk about a design project.",
     'c.email': 'Email', 'c.whatsapp': 'WhatsApp', 'c.phone': 'Phone', 'c.mobile': 'Phone', 'c.link': 'Link',
     'rights': 'All Rights Reserved', 'stars': '{n} out of 5 stars',
     'error': 'Content could not be loaded. (If you opened index.html straight from your computer, use a local server or view the live site.)'
@@ -99,6 +100,7 @@ var UI = {
     'badge.logo': 'شعار', 'badge.view': 'عرض', 'badge.flipbook': 'تصفّح', 'badge.posts': '{n} منشور',
     'count.pages': '{n} صفحة', 'count.posts': '{n} منشور', 'viewer.pages': '{n} صفحة', 'viewer.posts': '{n} منشور',
     'more': 'عرض المزيد · متبقٍ {n}',
+    'c.waMsg': 'مرحبا أحمد! شفت معرض أعمالك وحابب نحكي عن مشروع تصميم.',
     'c.email': 'البريد الإلكتروني', 'c.whatsapp': 'واتساب', 'c.phone': 'الهاتف', 'c.mobile': 'الجوال', 'c.link': 'رابط',
     'rights': 'جميع الحقوق محفوظة', 'stars': '{n} من 5 نجوم',
     'error': 'تعذّر تحميل المحتوى. يرجى المحاولة لاحقًا.'
@@ -146,7 +148,7 @@ var CATEGORIES = [
 ];
 var CONTACT_TYPES = {
   email:    { label: 'Email',    icon: '✉️', href: function (v) { return 'mailto:' + v.trim(); } },
-  whatsapp: { label: 'WhatsApp', icon: '💬', href: function (v) { return 'https://wa.me/' + v.replace(/\D/g, ''); }, blank: true },
+  whatsapp: { label: 'WhatsApp', icon: '💬', href: function (v, ct) { return 'https://wa.me/' + v.replace(/\D/g, '') + '?text=' + encodeURIComponent(tr(ct || {}, 'message') || T('c.waMsg')); }, blank: true },
   phone:    { label: 'Phone',    icon: '📞', href: function (v) { return 'tel:+' + v.replace(/\D/g, ''); } },
   mobile:   { label: 'Phone',    icon: '📱', href: function (v) { return 'tel:+' + v.replace(/\D/g, ''); } },
   link:     { label: 'Link',     icon: '🔗', href: function (v) { return v.trim(); }, blank: true }
@@ -274,7 +276,7 @@ function render(c) {
   (c.contact || []).forEach(function (ct) {
     var t = CONTACT_TYPES[ct.type] || CONTACT_TYPES.link;
     var a = el('a', 'contact-card');
-    a.href = t.href(ct.value || '');
+    a.href = t.href(ct.value || '', ct);
     if (t.blank) a.target = '_blank';
     a.addEventListener('click', function () { track('Contact: ' + (ct.type || 'link')); });
     a.appendChild(el('div', 'contact-icon', t.icon));
