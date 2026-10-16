@@ -1431,3 +1431,21 @@ img[loading="lazy"] { will-change: auto; }
   .rv-star { font-size: 38px; }
 }
 .rv-link[hidden] { display: none; }
+
+/* "Leave a review" button under the strip */
+.reviews-cta { display: flex; justify-content: center; margin-top: 34px; }
+.rv-cta-btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 15px 34px; border-radius: 40px;
+  background: var(--neon); color: var(--black);
+  font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 1px;
+  text-decoration: none;
+  transition: transform 0.25s, box-shadow 0.25s;
+}
+.rv-cta-btn:hover { transform: translateY(-3px); box-shadow: 0 14px 34px -12px rgba(200,255,0,0.55); }
+.rv-cta-star { font-size: 16px; line-height: 1; }
+.reviews-empty { color: var(--gray-light); font-size: 15px; text-align: center; margin-top: 10px; }
+@media (max-width: 600px) {
+  .reviews-cta { margin-top: 24px; }
+  .rv-cta-btn { width: 100%; justify-content: center; }
+}

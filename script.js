@@ -251,6 +251,7 @@ function loadReviews(c) {
   var own = c.reviews || [];
   var api = ((c.site && c.site.reviewsApi) || '').trim();
   if (!api) { renderReviews(own); return; }
+  document.getElementById('reviewsCta').style.display = '';   // form is connected → show the button
   var done = false;
   var finish = function (fromClients) {
     if (done) return; done = true;
@@ -266,9 +267,15 @@ function loadReviews(c) {
 // Moving strip: the cards slide in an endless loop (pauses on hover/touch).
 function renderReviews(list) {
   list = list.filter(function (r) { return r && (r.name || r.opinion); });
-  if (!list.length) return;                       // section stays hidden
+  var formOpen = document.getElementById('reviewsCta').style.display !== 'none';
+  if (!list.length && !formOpen) return;          // nothing to show → section stays hidden
   ['reviews', 'reviewsDivider'].forEach(function (id) { document.getElementById(id).style.display = ''; });
   document.getElementById('navReviews').style.display = '';
+  if (!list.length) {                             // no reviews yet, but clients can add one
+    document.querySelector('.reviews-marquee').style.display = 'none';
+    document.getElementById('reviewsEmpty').style.display = '';
+    return;
+  }
 
   var track = document.getElementById('reviewsTrack');
   // Repeat short lists so the strip is always full, then add one identical
