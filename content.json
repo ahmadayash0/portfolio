@@ -2,7 +2,8 @@
   "site": {
     "pageTitle": "Ahmed Ayash - Senior Graphic Designer",
     "navLogo": "AHMAD",
-    "footerName": "Ahmad Ayash"
+    "footerName": "Ahmad Ayash",
+    "reviewsApi": "https://script.google.com/macros/s/AKfycbw1r2_F_E4FU79bIu8ESsajaEJ1f5Sutw9qH9CzrNQ-_5N7t_t5i8ufON6QXYDzjZvf/exec"
   },
   "hero": {
     "tag": "Available for Projects",
