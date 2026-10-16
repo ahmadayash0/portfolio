@@ -78,10 +78,6 @@
       "level": "Expert",
       "level_ar": "خبير",
       "icon": "/images/powerpoint.png"
-    },
-    {
-      "name": "whatever",
-      "level": "expert"
     }
   ],
   "services": [
