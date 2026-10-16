@@ -1,5 +1,5 @@
-# Fills EMPTY Arabic fields in content.json with Google Translate after every dashboard save.
-# Arabic you wrote yourself is never changed. Names are not translated.
+# Fills EMPTY English or Arabic fields in content.json with Google Translate after every dashboard save.
+# Text you wrote yourself is never changed. Write in English or Arabic; the other language is filled in.
 name: Auto-translate Arabic
 
 on:
@@ -27,16 +27,18 @@ jobs:
           cat > /tmp/autotranslate.py <<'PYEOF'
           #!/usr/bin/env python3
           """
-          Fills EMPTY Arabic fields (..._ar) in content.json with Google Translate.
-          * Never changes an Arabic text you wrote yourself.
-          * Names are not translated (your name, project names, tool names, clients).
-          * Uses the Google script already saved in site.reviewsApi.
+          Auto-translate for content.json (both directions).
+          * English filled, Arabic empty  -> Arabic is filled from English.
+          * Arabic filled, English empty  -> English is filled from Arabic.
+          * Arabic typed in an English field (and the Arabic field empty) -> it is moved to
+            the Arabic field and the English field gets the translation.
+          * Never changes a text you wrote yourself in both languages.
+          * Names (your name, project names) are never machine-translated English->Arabic.
           """
-          import json, sys, urllib.request
+          import json, re, urllib.request
           
           PATH = "content.json"
-          # section -> fields to translate (names are intentionally not listed)
-          FIELDS = {
+          TEXT = {   # translated both ways
               "site": ["pageTitle"],
               "hero": ["tag", "title", "description"],
               "stats": ["label"],
@@ -45,53 +47,71 @@ jobs:
               "projects": ["subtitle"],
               "contact": ["label"],
           }
+          NAMES = {  # only filled English<-Arabic (an English name is kept as it is in Arabic)
+              "site": ["navLogo", "footerName"],
+              "hero": ["firstName", "lastName"],
+              "projects": ["title"],
+          }
+          ARABIC = re.compile(r"[؀-ۿ]")
           
-          def translate(api, texts):
-              body = json.dumps({"action": "translate", "texts": texts}).encode()
+          def s(v):
+              return v.strip() if isinstance(v, str) else ""
+          
+          def call(api, texts, src):
+              body = json.dumps({"action": "translate", "texts": texts, "from": src}).encode()
               req = urllib.request.Request(api, data=body, headers={"Content-Type": "text/plain"})
               with urllib.request.urlopen(req, timeout=120) as r:   # follows Google's redirect
                   data = json.loads(r.read().decode())
               out = data.get("out") or []
               if len(out) != len(texts):
-                  raise SystemExit("Google script did not return translations - was the new version deployed?")
+                  raise SystemExit("Google script did not return translations - was the new version deployed? Got: " + json.dumps(data)[:300])
+              if src == "ar" and data.get("from") != "ar":
+                  raise SystemExit("The Google script is the old version (English->Arabic only). Paste the new code and Deploy a New version.")
               return out
+          
+          def objects(data, section):
+              part = data.get(section)
+              items = part if isinstance(part, list) else [part] if isinstance(part, dict) else []
+              return [o for o in items if isinstance(o, dict)]
           
           def main():
               raw = open(PATH, encoding="utf-8").read()
               data = json.loads(raw)
-              api = (data.get("site") or {}).get("reviewsApi", "").strip()
+              api = s((data.get("site") or {}).get("reviewsApi"))
               if not api:
                   print("No Google script URL (site.reviewsApi) - nothing to do."); return
-              todo = []  # (object, key, english)
-              for section, keys in FIELDS.items():
-                  part = data.get(section)
-                  items = part if isinstance(part, list) else [part] if isinstance(part, dict) else []
-                  for obj in items:
-                      if not isinstance(obj, dict):
-                          continue
-                      for k in keys:
-                          en = obj.get(k)
-                          if isinstance(en, str) and en.strip() and not str(obj.get(k + "_ar") or "").strip():
-                              todo.append((obj, k, en.strip()))
-              if not todo:
-                  print("All Arabic fields already filled."); return
+              to_ar, to_en = [], []   # (object, englishKey, sourceText)
+              moved = 0
+              for group, both in ((TEXT, True), (NAMES, False)):
+                  for section, keys in group.items():
+                      for o in objects(data, section):
+                          for k in keys:
+                              en, ar = s(o.get(k)), s(o.get(k + "_ar"))
+                              if en and not ar and ARABIC.search(en):
+                                  o[k + "_ar"] = en; o[k] = ""; en, ar = "", en; moved += 1
+                                  print(f"{k}: Arabic was typed in the English field -> moved to {k}_ar")
+                              if ar and not en:
+                                  to_en.append((o, k, ar))
+                              elif en and not ar and both:
+                                  to_ar.append((o, k, en))
               done = 0
-              for i in range(0, len(todo), 50):
-                  chunk = todo[i:i + 50]
-                  for (obj, k, _), ar in zip(chunk, translate(api, [t[2] for t in chunk])):
-                      if ar and ar.strip():
-                          obj[k + "_ar"] = ar.strip(); done += 1
-                          print(f"{k}: {obj[k]!r} -> {ar.strip()!r}")
-              if done:
+              for jobs, src, suffix in ((to_ar, "en", "_ar"), (to_en, "ar", "")):
+                  for i in range(0, len(jobs), 50):
+                      chunk = jobs[i:i + 50]
+                      for (o, k, text), out in zip(chunk, call(api, [j[2] for j in chunk], src)):
+                          if s(out):
+                              o[k + suffix] = s(out); done += 1
+                              print(f"{k}{suffix}: {text!r} -> {s(out)!r}")
+              if done or moved:
                   with open(PATH, "w", encoding="utf-8") as f:
                       f.write(json.dumps(data, ensure_ascii=False, indent=2) + ("\n" if raw.endswith("\n") else ""))
-              print(f"Translated {done} field(s).")
+              print(f"Translated {done} field(s), moved {moved}.")
           
           if __name__ == "__main__":
               main()
           PYEOF
 
-      - name: Translate empty Arabic fields
+      - name: Translate empty fields
         run: python3 /tmp/autotranslate.py
 
       - name: Save
@@ -100,7 +120,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add content.json
           if git diff --cached --quiet; then echo "Nothing new to translate."; exit 0; fi
-          git commit -m "Fill Arabic translations (automatic)"
+          git commit -m "Fill translations (automatic)"
           for i in 1 2 3; do
             git pull --rebase origin main && git push origin HEAD:main && exit 0
             sleep 5
