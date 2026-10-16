@@ -78,6 +78,10 @@
       "level": "Expert",
       "level_ar": "خبير",
       "icon": "/images/powerpoint.png"
+    },
+    {
+      "name": "whatever",
+      "level": "expert"
     }
   ],
   "services": [
@@ -115,7 +119,6 @@
   "projects": [
     {
       "title": "Golden Wood",
-      "title_ar": "",
       "subtitle": "Wood Industry — UAE",
       "subtitle_ar": "صناعة الأخشاب — الإمارات",
       "category": "logos",
@@ -126,7 +129,6 @@
     },
     {
       "title": "Jeddah Chocolate",
-      "title_ar": "",
       "subtitle": "Premium Chocolate Retail",
       "subtitle_ar": "شوكولاتة فاخرة — تجزئة",
       "category": "logos",
@@ -137,7 +139,6 @@
     },
     {
       "title": "Sanad AI",
-      "title_ar": "",
       "subtitle": "Receivables & Payables Platform — KSA",
       "subtitle_ar": "منصة الذمم المدينة والدائنة — السعودية",
       "category": "logos",
@@ -148,7 +149,6 @@
     },
     {
       "title": "Jelly Node",
-      "title_ar": "",
       "subtitle": "Digital Services — Palestine",
       "subtitle_ar": "خدمات رقمية — فلسطين",
       "category": "logos",
@@ -159,7 +159,6 @@
     },
     {
       "title": "AMD",
-      "title_ar": "",
       "subtitle": "Real Estate Development — UAE",
       "subtitle_ar": "التطوير العقاري — الإمارات",
       "category": "logos",
@@ -170,7 +169,6 @@
     },
     {
       "title": "Lamorya",
-      "title_ar": "",
       "subtitle": "Luxury Perfumes — Oman",
       "subtitle_ar": "عطور فاخرة — عُمان",
       "category": "logos",
@@ -258,7 +256,6 @@
     },
     {
       "title": "Sanad AI",
-      "title_ar": "",
       "subtitle": "Brand Identity",
       "subtitle_ar": "هوية بصرية",
       "category": "branding",
@@ -294,7 +291,6 @@
     },
     {
       "title": "Jelly Node",
-      "title_ar": "",
       "subtitle": "Brand Identity",
       "subtitle_ar": "هوية بصرية",
       "category": "branding",
@@ -311,7 +307,6 @@
     },
     {
       "title": "Deemah",
-      "title_ar": "",
       "subtitle": "Brand Identity",
       "subtitle_ar": "هوية بصرية",
       "category": "branding",
@@ -340,7 +335,6 @@
     },
     {
       "title": "AMD",
-      "title_ar": "",
       "subtitle": "Brand Identity",
       "subtitle_ar": "هوية بصرية",
       "category": "branding",
@@ -363,7 +357,6 @@
     },
     {
       "title": "Golden Wood",
-      "title_ar": "",
       "subtitle": "Product Catalog",
       "subtitle_ar": "كتالوج منتجات",
       "category": "catalog",
@@ -481,7 +474,6 @@
     },
     {
       "title": "SALB",
-      "title_ar": "",
       "subtitle": "Strength & Training Equipment - KSA",
       "subtitle_ar": "معدات القوة والتدريب — السعودية",
       "category": "logos",
