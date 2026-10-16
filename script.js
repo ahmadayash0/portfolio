@@ -247,21 +247,26 @@ function reviewCard(r, i) {
 }
 
 // Reviews = approved reviews sent by clients (Google Sheet) + reviews added in the dashboard.
+// Dashboard reviews (and the last known client reviews) show immediately; fresh client
+// reviews are added whenever Google answers. The script can take several seconds to wake up.
 function loadReviews(c) {
   var own = c.reviews || [];
   var api = ((c.site && c.site.reviewsApi) || '').trim();
   if (!api) { renderReviews(own); return; }
   document.getElementById('reviewsCta').style.display = '';   // form is connected → show the button
-  var done = false;
-  var finish = function (fromClients) {
-    if (done) return; done = true;
-    renderReviews((fromClients || []).concat(own));
-  };
-  setTimeout(function () { finish([]); }, 8000);          // never wait forever
+
+  var KEY = 'portfolioClientReviews', cached = [];
+  try { cached = JSON.parse(localStorage.getItem(KEY) || '[]') || []; } catch (e) { cached = []; }
+  renderReviews(cached.concat(own));
+
   fetch(api)
     .then(function (r) { return r.json(); })
-    .then(function (d) { finish((d && d.reviews) || []); })
-    .catch(function () { finish([]); });
+    .then(function (d) {
+      var fresh = (d && Array.isArray(d.reviews)) ? d.reviews : [];
+      try { localStorage.setItem(KEY, JSON.stringify(fresh)); } catch (e) {}
+      if (JSON.stringify(fresh) !== JSON.stringify(cached)) renderReviews(fresh.concat(own));
+    })
+    .catch(function () { /* keep what is already shown */ });
 }
 
 // Moving strip: the cards slide in an endless loop (pauses on hover/touch).
@@ -271,11 +276,11 @@ function renderReviews(list) {
   if (!list.length && !formOpen) return;          // nothing to show → section stays hidden
   ['reviews', 'reviewsDivider'].forEach(function (id) { document.getElementById(id).style.display = ''; });
   document.getElementById('navReviews').style.display = '';
-  if (!list.length) {                             // no reviews yet, but clients can add one
-    document.querySelector('.reviews-marquee').style.display = 'none';
-    document.getElementById('reviewsEmpty').style.display = '';
-    return;
-  }
+  var marqueeBox = document.querySelector('.reviews-marquee');
+  document.getElementById('reviewsTrack').innerHTML = '';      // allow re-rendering
+  marqueeBox.style.display = list.length ? '' : 'none';
+  document.getElementById('reviewsEmpty').style.display = list.length ? 'none' : '';
+  if (!list.length) return;                       // no reviews yet, but clients can add one
 
   var track = document.getElementById('reviewsTrack');
   // Repeat short lists so the strip is always full, then add one identical
@@ -294,8 +299,11 @@ function renderReviews(list) {
 
   // pause while a finger is on it (phones)
   var marquee = track.parentElement;
-  marquee.addEventListener('touchstart', function () { marquee.classList.add('paused'); }, { passive: true });
-  marquee.addEventListener('touchend', function () { marquee.classList.remove('paused'); }, { passive: true });
+  if (!marquee.dataset.touch) {
+    marquee.dataset.touch = '1';
+    marquee.addEventListener('touchstart', function () { marquee.classList.add('paused'); }, { passive: true });
+    marquee.addEventListener('touchend', function () { marquee.classList.remove('paused'); }, { passive: true });
+  }
 }
 
 // ===== Tab filter + "Show more" =====
