@@ -1559,6 +1559,7 @@ html[dir=rtl] .review-card::before { right: auto; left: -80px; }
 .social-post:hover, .social-post:focus-visible { border-color: rgba(var(--neon-rgb),0.45); outline: none; }
 .social-post:hover img { transform: scale(1.03); }
 .social-more { display: block; margin: 6px auto 0; }
+.social-more[hidden] { display: none; }
 @media (max-width: 600px) {
   .social-head h3 { font-size: 24px; }
   .social-masonry { columns: 2; column-gap: 10px; }
@@ -1567,3 +1568,9 @@ html[dir=rtl] .review-card::before { right: auto; left: -80px; }
 }
 html[dir=rtl] .social-head h3 { font-family: 'Alexandria', 'Bebas Neue', sans-serif; font-weight: 700; font-size: 22px; letter-spacing: 0; }
 .social-sub { margin: 26px 0 14px; }
+
+/* Social designs in justified rows (real shapes, every row fills the width) */
+.social-rows { display: flex; flex-wrap: wrap; gap: 12px; }
+.social-rows .social-post { flex: none; margin: 0; min-width: 0; }
+.social-rows .social-post img { width: 100%; height: 100%; object-fit: cover; min-height: 0; }
+@media (max-width: 600px) { .social-rows { gap: 8px; } }

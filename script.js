@@ -493,41 +493,80 @@ function socialSection(p, name, paths, note) {
   });
   return sec;
 }
+// Justified rows: every design keeps its real shape; each row is scaled so it fills the full width exactly.
+// Collapsed walls show only the first full rows, with a "Show all" button for the rest.
+var SOCIAL_WALLS = [];
+function layoutWall(wall) {
+  var W = wall.clientWidth;
+  if (!W) return;
+  var mobile = window.matchMedia('(max-width: 600px)').matches;
+  var target = mobile ? 160 : 280, gap = mobile ? 8 : 12, maxRows = mobile ? 3 : 2;
+  var items = [].slice.call(wall.children);
+  var ratio = function (it) { return parseFloat(it.dataset.r) || 0.8; };
+
+  // split into rows
+  var rows = [], row = [], sum = 0;
+  items.forEach(function (it) {
+    row.push(it); sum += ratio(it);
+    if (sum * target + gap * (row.length - 1) >= W) { rows.push({ items: row, sum: sum, full: true }); row = []; sum = 0; }
+  });
+  if (row.length) rows.push({ items: row, sum: sum, full: false });
+
+  var shown = wall.collapsed ? rows.slice(0, maxRows) : rows;
+  rows.forEach(function (r) { r.items.forEach(function (it) { it.hidden = shown.indexOf(r) < 0; }); });
+  shown.forEach(function (r) {
+    var free = W - gap * (r.items.length - 1), h = free / r.sum;
+    if (!r.full) {                                   // last row: stretch only when it's mostly full
+      var fill = (r.sum * target) / free;
+      h = fill >= 0.6 ? Math.min(h, target * 1.5) : target;
+    }
+    r.items.forEach(function (it) {
+      it.style.width = Math.floor(ratio(it) * h) + 'px';
+      it.style.height = Math.round(h) + 'px';
+    });
+  });
+  if (wall.moreBtn) wall.moreBtn.hidden = rows.length <= maxRows;
+}
+window.addEventListener('resize', function () {
+  clearTimeout(layoutWall.t);
+  layoutWall.t = setTimeout(function () { SOCIAL_WALLS.forEach(layoutWall); }, 120);
+});
 function socialWall(sec, name, paths) {
-  var wall = el('div', 'social-masonry');
-  var srcs = paths.map(asset), wide = 0, loaded = 0;
-  var limit = window.matchMedia('(max-width: 600px)').matches ? 4 : 8;
+  var wall = el('div', 'social-rows');
+  wall.collapsed = true;
+  SOCIAL_WALLS.push(wall);
+  var srcs = paths.map(asset);
+  var again = function () { cancelAnimationFrame(again.f); again.f = requestAnimationFrame(function () { layoutWall(wall); }); };
   srcs.forEach(function (src, k) {
     var post = el('button', 'social-post');
     post.type = 'button';
     post.onclick = function () { openImgLightbox(src, srcs, k); };
-    if (k >= limit) post.hidden = true;
+    post.dataset.r = '0.8';                                     // a typical 4:5 post until the image is loaded
     var im = imgPreview(src, name + ' ' + (k + 1));
     im.addEventListener('load', function () {
-      if (im.naturalWidth > im.naturalHeight * 1.2) wide++;
-      if (++loaded === srcs.length) wall.classList.toggle('wide', wide * 2 > srcs.length);  // mostly landscape: bigger columns
+      if (im.naturalWidth && im.naturalHeight) { post.dataset.r = (im.naturalWidth / im.naturalHeight).toFixed(4); again(); }
     });
     post.appendChild(im);
     wall.appendChild(post);
   });
   sec.appendChild(wall);
 
-  if (srcs.length > limit) {
-    var more = el('button', 'show-more-btn social-more', T('social.all', srcs.length));
-    more.type = 'button';
-    var open = false;
-    more.onclick = function () {
-      open = !open;
-      [].forEach.call(wall.children, function (c, k) { c.hidden = !open && k >= limit; });
-      more.textContent = open ? T('social.less') : T('social.all', srcs.length);
-      // When closing, bring this group back into view so the visitor isn't left far below
-      if (!open) {
-        var top = wall.getBoundingClientRect().top + window.scrollY - 140;
-        window.scrollTo({ top: top, behavior: 'smooth' });
-      }
-    };
-    sec.appendChild(more);
-  }
+  var more = el('button', 'show-more-btn social-more', T('social.all', srcs.length));
+  more.type = 'button';
+  more.hidden = true;
+  wall.moreBtn = more;
+  more.onclick = function () {
+    wall.collapsed = !wall.collapsed;
+    more.textContent = wall.collapsed ? T('social.all', srcs.length) : T('social.less');
+    layoutWall(wall);
+    // When closing, bring this group back into view so the visitor isn't left far below
+    if (wall.collapsed) {
+      var top = wall.getBoundingClientRect().top + window.scrollY - 140;
+      window.scrollTo({ top: top, behavior: 'smooth' });
+    }
+  };
+  sec.appendChild(more);
+  setTimeout(again, 0);
 }
 
 // ===== Tab filter + "Show more" =====
@@ -558,6 +597,7 @@ function applyFilter() {
   });
   // Denser grid when the tab only contains social posts
   document.getElementById('portfolioGrid').classList.toggle('posts-mode', count > 0 && postsOnly);
+  if (typeof SOCIAL_WALLS !== 'undefined') SOCIAL_WALLS.forEach(layoutWall);   // size the rows now that they are visible
 
   var wrap = document.getElementById('showMoreWrap');
   var left = count - FILTER.shown;
