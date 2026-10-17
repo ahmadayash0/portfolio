@@ -1378,6 +1378,9 @@ img[loading="lazy"] { will-change: auto; }
 }
 .rv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
 .rv-field { display: flex; flex-direction: column; gap: 8px; position: relative; }
+.rv-hint[hidden] { display: none; }
+#rvCountry:disabled { opacity: 1; color: var(--white); cursor: not-allowed; border-style: dashed; }
+.rv-hint { display: block; margin-top: 6px; font-size: 12px; color: var(--neon); opacity: 0.85; }
 .rv-label-text { font-size: 12px; color: var(--gray-light); letter-spacing: 1px; text-transform: uppercase; font-weight: 500; }
 .rv-opt { text-transform: none; color: var(--gray); letter-spacing: 0; font-weight: 400; }
 .rv-form input[type=text], .rv-form select, .rv-form textarea {

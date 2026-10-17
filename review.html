@@ -42,7 +42,7 @@
      if (l === 'ar') document.write('<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;700;800&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">');
    })();
   </script>
-  <link href="styles.css?v=20261017b" rel="stylesheet"/>
+  <link href="styles.css?v=20261017c" rel="stylesheet"/>
  </head>
  <body class="review-page">
   <nav>
@@ -86,6 +86,7 @@
      <select name="country" required id="rvCountry">
       <option value="" data-i18n="selectCountry">Select your country</option>
      </select>
+     <small class="rv-hint" id="rvCountryHint" data-i18n="countryAuto" hidden>🔒 Detected automatically from your location.</small>
     </label>
 
     <div class="rv-field">
@@ -134,7 +135,7 @@
         back: '← Back to portfolio', label: 'Client Review', title: 'SHARE YOUR EXPERIENCE',
         intro: 'Thank you for working with me! Your feedback means a lot. It will appear on the portfolio after a quick review.',
         photo: 'Your photo', optional: '(optional)', upload: 'Upload a photo', change: 'Change photo', remove: 'Remove',
-        name: 'Your name *', role: 'Company / job title', country: 'Country *', selectCountry: 'Select your country',
+        name: 'Your name *', role: 'Company / job title', country: 'Country *', selectCountry: 'Select your country', countryAuto: '🔒 Detected automatically from your location.',
         rating: 'Your rating *', review: 'Your review *', placeholder: 'How was working together? What did you like most?',
         send: 'Send review', thanks: 'Thank you!', sent: "Your review was sent. It will appear on the portfolio once it's approved.",
         backBtn: 'Back to portfolio', switchTo: 'عربي', pageTitle: 'Leave a Review',
@@ -147,7 +148,7 @@
         back: '→ العودة إلى المعرض', label: 'رأي العميل', title: 'شاركنا تجربتك',
         intro: 'شكرًا لعملك معي! رأيك يهمّني كثيرًا، وسيظهر في المعرض بعد مراجعة سريعة.',
         photo: 'صورتك', optional: '(اختياري)', upload: 'رفع صورة', change: 'تغيير الصورة', remove: 'حذف',
-        name: 'اسمك *', role: 'الشركة / المسمّى الوظيفي', country: 'الدولة *', selectCountry: 'اختر دولتك',
+        name: 'اسمك *', role: 'الشركة / المسمّى الوظيفي', country: 'الدولة *', selectCountry: 'اختر دولتك', countryAuto: '🔒 تم تحديد دولتك تلقائيًا حسب موقعك.',
         rating: 'تقييمك *', review: 'رأيك *', placeholder: 'كيف كانت تجربة العمل معًا؟ ما أكثر ما أعجبك؟',
         send: 'إرسال التقييم', thanks: 'شكرًا لك!', sent: 'تم إرسال رأيك، وسيظهر في المعرض بعد الموافقة عليه.',
         backBtn: 'العودة إلى المعرض', switchTo: 'EN', pageTitle: 'اترك تقييمك',
@@ -179,6 +180,30 @@
     Object.keys(COUNTRIES).forEach(function (c) {
       var o = document.createElement('option'); o.value = c; o.textContent = (LANG === 'ar' && COUNTRIES_AR[c]) || COUNTRIES[c]; sel.appendChild(o);
     });
+
+    // Fill in the visitor's country automatically (from their internet connection) and lock it.
+    // If it can't be detected, the normal list stays so they are never stuck.
+    var countryHint = document.getElementById('rvCountryHint');
+    (function detectCountry() {
+      function getJSON(url) {
+        var ctl = window.AbortController ? new AbortController() : null;
+        if (ctl) setTimeout(function () { ctl.abort(); }, 5000);
+        return fetch(url, { cache: 'no-store', signal: ctl ? ctl.signal : undefined })
+          .then(function (r) { if (!r.ok) throw new Error('http'); return r.json(); });
+      }
+      function apply(code) {
+        code = String(code || '').toLowerCase();
+        if (!COUNTRIES[code]) return;                  // not in our list: they pick it themselves
+        sel.value = code;
+        sel.disabled = true;                            // locked: the country comes from their connection
+        countryHint.hidden = false;
+      }
+      getJSON('https://api.country.is/')
+        .then(function (d) { return d.country; })
+        .catch(function () { return getJSON('https://ipwho.is/').then(function (d) { return d.country_code; }); })
+        .then(apply)
+        .catch(function () {});                        // no detection: the normal list stays
+    })();
 
     // stars
     var starsBox = document.getElementById('rvStars');
