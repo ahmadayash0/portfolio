@@ -464,6 +464,23 @@
       "images": [
         "/images/Artboard 2-1.png"
       ]
+    },
+    {
+      "title": "Al Badia",
+      "title_ar": "البادية",
+      "subtitle": "restaurant & coffee ",
+      "subtitle_ar": "مطعم وكافيه",
+      "category": "branding",
+      "viewer": "scroll",
+      "images": [
+        "/images/Artboard 1.jpg",
+        "/images/Artboard 2.jpg",
+        "/images/Artboard 3.jpg",
+        "/images/Artboard 5.jpg",
+        "/images/Artboard 6.jpg",
+        "/images/Artboard 7.jpg",
+        "/images/Artboard 8-1.jpg"
+      ]
     }
   ],
   "contact": [
