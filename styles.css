@@ -1102,8 +1102,8 @@ img[loading="lazy"] { will-change: auto; }
 
 /* ===== Social posts shown directly in the portfolio grid ===== */
 .portfolio-grid.posts-mode {
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 18px;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 36px;
 }
 .post-item .portfolio-thumb {
   height: auto;
@@ -1112,7 +1112,7 @@ img[loading="lazy"] { will-change: auto; }
 .post-item .portfolio-thumb img { transition: transform 0.4s; }
 .post-item:hover .portfolio-thumb img { transform: scale(1.04); }
 @media (max-width: 600px) {
-  .portfolio-grid.posts-mode { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .portfolio-grid.posts-mode { grid-template-columns: minmax(0, 1fr); gap: 28px; }
   .post-item { border-radius: 10px; }
   .post-item .portfolio-thumb { height: auto; }
 }
@@ -1538,3 +1538,31 @@ html[dir=rtl] .review-card::before { right: auto; left: -80px; }
 @media (max-width: 600px) {
   html[dir=rtl] .stat-label { font-size: 12px; }
 }
+
+/* ===== Social media: one section per brand, designs in their real shape ===== */
+.social-section { grid-column: 1 / -1; min-width: 0; background: none; border: 0; border-radius: 0; overflow: visible; cursor: default; }
+.social-section:hover { transform: none; border-color: transparent; }
+.social-head { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; margin-bottom: 16px; }
+.social-note { font-style: normal; font-size: 12px; font-weight: 600; color: var(--neon); border: 1px solid rgba(var(--neon-rgb),0.35); background: rgba(var(--neon-rgb),0.08); padding: 4px 12px; border-radius: 30px; }
+.social-head span { opacity: 0.8; }
+.social-head h3 { font-family: 'Bebas Neue', sans-serif; font-weight: 400; font-size: 30px; letter-spacing: 1px; line-height: 1; color: var(--white); }
+.social-head span { color: var(--neon); font-size: 13px; font-weight: 600; }
+.social-masonry { columns: 230px; column-gap: 14px; }
+.social-masonry.wide { columns: 380px; }
+.social-post {
+  display: block; width: 100%; margin: 0 0 14px; padding: 0; break-inside: avoid;
+  border: 1px solid var(--dark-3); border-radius: 10px; overflow: hidden; background: var(--dark-2);
+  cursor: pointer; transition: border-color 0.3s;
+}
+.social-post[hidden] { display: none; }
+.social-post img { display: block; width: 100%; height: auto; min-height: 60px; transition: transform 0.4s; }
+.social-post:hover, .social-post:focus-visible { border-color: rgba(var(--neon-rgb),0.45); outline: none; }
+.social-post:hover img { transform: scale(1.03); }
+.social-more { display: block; margin: 6px auto 0; }
+@media (max-width: 600px) {
+  .social-head h3 { font-size: 24px; }
+  .social-masonry { columns: 2; column-gap: 10px; }
+  .social-masonry.wide { columns: 1; }
+  .social-post { margin-bottom: 10px; border-radius: 8px; }
+}
+html[dir=rtl] .social-head h3 { font-family: 'Alexandria', 'Bebas Neue', sans-serif; font-weight: 700; font-size: 22px; letter-spacing: 0; }

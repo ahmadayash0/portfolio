@@ -78,8 +78,8 @@ var UI = {
     'contact.label': 'Get in Touch', 'contact.title': "LET'S WORK TOGETHER",
     'tab.logos': 'Logos', 'tab.branding': 'Brand Identity', 'tab.social': 'Social Media', 'tab.catalog': 'Catalogs',
     'badge.logo': 'Logo', 'badge.view': 'View', 'badge.flipbook': 'Flipbook', 'badge.posts': '{n} Posts',
-    'count.pages': '{n} Pages', 'count.posts': '{n} posts', 'viewer.pages': '{n} pages', 'viewer.posts': '{n} posts',
-    'more': 'Show more · {n} left',
+    'count.pages': '{n} Pages', 'count.posts': '{n} posts', 'viewer.pages': '{n} pages', 'viewer.posts': '{n} posts', 'count.posts.one': '1 post',
+    'more': 'Show more · {n} left', 'social.more': 'More work', 'social.all': 'Show all {n}',
     'c.waMsg': "Hi Ahmad! I saw your portfolio and I'd like to talk about a design project.",
     'c.email': 'Email', 'c.whatsapp': 'WhatsApp', 'c.phone': 'Phone', 'c.mobile': 'Phone', 'c.link': 'Link',
     'rights': 'All Rights Reserved', 'stars': '{n} out of 5 stars',
@@ -98,8 +98,8 @@ var UI = {
     'contact.label': 'تواصل معي', 'contact.title': 'لنعمل معًا',
     'tab.logos': 'الشعارات', 'tab.branding': 'الهويات البصرية', 'tab.social': 'السوشيال ميديا', 'tab.catalog': 'الكتالوجات',
     'badge.logo': 'شعار', 'badge.view': 'عرض', 'badge.flipbook': 'تصفّح', 'badge.posts': '{n} منشور',
-    'count.pages': '{n} صفحة', 'count.posts': '{n} منشور', 'viewer.pages': '{n} صفحة', 'viewer.posts': '{n} منشور',
-    'more': 'عرض المزيد · متبقٍ {n}',
+    'count.pages': '{n} صفحة', 'count.posts': '{n} منشور', 'viewer.pages': '{n} صفحة', 'viewer.posts': '{n} منشور', 'count.posts.one': 'منشور واحد',
+    'more': 'عرض المزيد · متبقٍ {n}', 'social.more': 'أعمال أخرى', 'social.all': 'عرض الكل · {n}',
     'c.waMsg': 'مرحبا أحمد! شفت معرض أعمالك وحابب نحكي عن مشروع تصميم.',
     'c.email': 'البريد الإلكتروني', 'c.whatsapp': 'واتساب', 'c.phone': 'الهاتف', 'c.mobile': 'الجوال', 'c.link': 'رابط',
     'rights': 'جميع الحقوق محفوظة', 'stars': '{n} من 5 نجوم',
@@ -107,6 +107,7 @@ var UI = {
   }
 };
 function T(key, n) {
+  if (n === 1 && UI.en[key + '.one']) key += '.one';   // "1 post", not "1 posts"
   var s = (UI[LANG] && UI[LANG][key]) || UI.en[key] || key;
   return n == null ? s : s.replace('{n}', n);
 }
@@ -232,18 +233,9 @@ function render(c) {
               : viewer === 'flipbook' ? T('badge.flipbook')
               : p.category === 'logos' ? T('badge.logo') : T('badge.view');
 
-    // Social posts: show every post directly in the grid (no folder card).
+    // Social media: one section per brand (taken from the image's folder), real shapes, no cropping
     if (viewer === 'grid') {
-      var srcs = images.map(asset);
-      srcs.forEach(function (src, k) {
-        var post = el('div', 'portfolio-item post-item');
-        post.dataset.cat = p.category;
-        post.onclick = function () { openImgLightbox(src, srcs, k); };
-        var pt = el('div', 'portfolio-thumb');
-        pt.appendChild(imgPreview(src, (title || 'Post') + ' ' + (k + 1)));
-        post.appendChild(pt);
-        grid.appendChild(post);
-      });
+      socialSections(p, images).forEach(function (sec) { grid.appendChild(sec); });
       return;
     }
 
@@ -424,6 +416,86 @@ function renderReviews(list) {
   }
 }
 
+// ===== Social media: grouped by brand folder (images/social/<brand>/...) =====
+// Display names for brand folders. Any other folder name is shown as-is ("my-brand" -> "My Brand").
+var BRAND_NAMES = {
+  'ministry':   { en: 'Ministry of Industry and Mineral Resources', ar: 'وزارة الصناعة والثروة المعدنية',
+                  note: { en: 'Booklets & reports', ar: 'كتيبات وتقارير' } },
+  'jelly-node': { en: 'Jelly Node' },
+  'trendx':     { en: 'Trendx' }
+};
+var BRAND_ALWAYS_OWN = ['ministry'];   // always its own section, even with few designs
+var BRAND_MIN_OWN = 4;                 // brands with fewer designs share the "More work" section
+
+function brandOf(path) {
+  var parts = String(path).split('/').filter(Boolean);
+  var folder = parts.length > 2 ? parts[parts.length - 2] : '';
+  return (folder === 'social' || folder === 'images') ? '' : folder;
+}
+function brandNote(slug) {
+  var n = BRAND_NAMES[slug] && BRAND_NAMES[slug].note;
+  return n ? ((LANG === 'ar' && n.ar) || n.en) : '';
+}
+function brandName(slug) {
+  var b = BRAND_NAMES[slug];
+  if (b) return (LANG === 'ar' && b.ar) || b.en;
+  return slug.replace(/[-_]+/g, ' ').replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+}
+function socialSections(p, images) {
+  var groups = [], bySlug = {};
+  images.forEach(function (path) {
+    var slug = brandOf(path);
+    if (!bySlug[slug]) { bySlug[slug] = { slug: slug, items: [] }; groups.push(bySlug[slug]); }
+    bySlug[slug].items.push(path);
+  });
+  var own = [], small = [];
+  groups.forEach(function (g) {
+    if (g.slug && (g.items.length >= BRAND_MIN_OWN || BRAND_ALWAYS_OWN.indexOf(g.slug) > -1)) own.push(g);
+    else small = small.concat(g.items);
+  });
+  var out = own.map(function (g) { return socialSection(p, brandName(g.slug), g.items, brandNote(g.slug)); });
+  if (small.length) out.push(socialSection(p, T('social.more'), small));
+  return out;
+}
+function socialSection(p, name, paths, note) {
+  var sec = el('div', 'portfolio-item social-section');
+  sec.dataset.cat = p.category;
+  var head = el('div', 'social-head');
+  head.appendChild(el('h3', null, name));
+  if (note) head.appendChild(el('em', 'social-note', note));
+  head.appendChild(el('span', null, T('count.posts', paths.length)));
+  sec.appendChild(head);
+
+  var wall = el('div', 'social-masonry');
+  var srcs = paths.map(asset), wide = 0, loaded = 0;
+  var limit = window.matchMedia('(max-width: 600px)').matches ? 4 : 8;
+  srcs.forEach(function (src, k) {
+    var post = el('button', 'social-post');
+    post.type = 'button';
+    post.onclick = function () { openImgLightbox(src, srcs, k); };
+    if (k >= limit) post.hidden = true;
+    var im = imgPreview(src, name + ' ' + (k + 1));
+    im.addEventListener('load', function () {
+      if (im.naturalWidth > im.naturalHeight * 1.2) wide++;
+      if (++loaded === srcs.length) wall.classList.toggle('wide', wide * 2 > srcs.length);  // mostly landscape: bigger columns
+    });
+    post.appendChild(im);
+    wall.appendChild(post);
+  });
+  sec.appendChild(wall);
+
+  if (srcs.length > limit) {
+    var more = el('button', 'show-more-btn social-more', T('social.all', srcs.length));
+    more.type = 'button';
+    more.onclick = function () {
+      [].forEach.call(wall.children, function (c) { c.hidden = false; });
+      more.remove();
+    };
+    sec.appendChild(more);
+  }
+  return sec;
+}
+
 // ===== Tab filter + "Show more" =====
 // How many items to show before the "Show more" button (and per tap).
 function pageSize() { return window.matchMedia('(max-width: 600px)').matches ? 6 : 10; }
@@ -446,7 +518,7 @@ function applyFilter() {
     var match = (cat === 'all' || item.dataset.cat === cat);
     if (match) {
       count++;
-      if (!item.classList.contains('post-item')) postsOnly = false;
+      if (!item.classList.contains('social-section')) postsOnly = false;
     }
     item.style.display = (match && count <= FILTER.shown) ? '' : 'none';
   });
