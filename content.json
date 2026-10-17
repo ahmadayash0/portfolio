@@ -6,7 +6,7 @@
     "navLogo_ar": "أحمد",
     "footerName": "Ahmad Ayash",
     "footerName_ar": "أحمد عياش",
-    "reviewsApi": "https://script.google.com/macros/s/AKfycbw1r2_F_E4FU79bIu8ESsajaEJ1f5Sutw9qH9CzrNQ-_5N7t_t5i8ufON6QXYDzjZvf/exec"
+    "reviewsApi": "https://script.google.com/macros/s/AKfycbx6iz4xdP86veUbdVn5Fblz42gdKNGHKPpqssud5WtL1jzhlMsFq1F1cabAXp5zmX0G2w/exec"
   },
   "hero": {
     "tag": "Available for Projects",
@@ -477,16 +477,6 @@
       "images": [
         "/images/Artboard 2-1.png"
       ]
-    }
-  ],
-  "reviews": [
-    {
-      "name": "Mona",
-      "role": "Nasa",
-      "photo": "/images/profile-1.jpg",
-      "country": "ca",
-      "opinion": "mashi el7al kolh tmam",
-      "rating": "3"
     }
   ],
   "contact": [
