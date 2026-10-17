@@ -79,7 +79,7 @@ var UI = {
     'tab.logos': 'Logos', 'tab.branding': 'Brand Identity', 'tab.social': 'Social Media', 'tab.catalog': 'Catalogs',
     'badge.logo': 'Logo', 'badge.view': 'View', 'badge.flipbook': 'Flipbook', 'badge.posts': '{n} Posts',
     'count.pages': '{n} Pages', 'count.posts': '{n} posts', 'viewer.pages': '{n} pages', 'viewer.posts': '{n} posts', 'count.posts.one': '1 post',
-    'more': 'Show more · {n} left', 'social.more': 'More work', 'social.all': 'Show all {n}',
+    'more': 'Show more · {n} left', 'social.more': 'More work', 'social.all': 'Show all {n}', 'social.less': 'Show less',
     'c.waMsg': "Hi Ahmad! I saw your portfolio and I'd like to talk about a design project.",
     'c.email': 'Email', 'c.whatsapp': 'WhatsApp', 'c.phone': 'Phone', 'c.mobile': 'Phone', 'c.link': 'Link',
     'rights': 'All Rights Reserved', 'stars': '{n} out of 5 stars',
@@ -99,7 +99,7 @@ var UI = {
     'tab.logos': 'الشعارات', 'tab.branding': 'الهويات البصرية', 'tab.social': 'السوشيال ميديا', 'tab.catalog': 'الكتالوجات',
     'badge.logo': 'شعار', 'badge.view': 'عرض', 'badge.flipbook': 'تصفّح', 'badge.posts': '{n} منشور',
     'count.pages': '{n} صفحة', 'count.posts': '{n} منشور', 'viewer.pages': '{n} صفحة', 'viewer.posts': '{n} منشور', 'count.posts.one': 'منشور واحد',
-    'more': 'عرض المزيد · متبقٍ {n}', 'social.more': 'أعمال أخرى', 'social.all': 'عرض الكل · {n}',
+    'more': 'عرض المزيد · متبقٍ {n}', 'social.more': 'أعمال أخرى', 'social.all': 'عرض الكل · {n}', 'social.less': 'عرض أقل',
     'c.waMsg': 'مرحبا أحمد! شفت معرض أعمالك وحابب نحكي عن مشروع تصميم.',
     'c.email': 'البريد الإلكتروني', 'c.whatsapp': 'واتساب', 'c.phone': 'الهاتف', 'c.mobile': 'الجوال', 'c.link': 'رابط',
     'rights': 'جميع الحقوق محفوظة', 'stars': '{n} من 5 نجوم',
@@ -487,9 +487,16 @@ function socialSection(p, name, paths, note) {
   if (srcs.length > limit) {
     var more = el('button', 'show-more-btn social-more', T('social.all', srcs.length));
     more.type = 'button';
+    var open = false;
     more.onclick = function () {
-      [].forEach.call(wall.children, function (c) { c.hidden = false; });
-      more.remove();
+      open = !open;
+      [].forEach.call(wall.children, function (c, k) { c.hidden = !open && k >= limit; });
+      more.textContent = open ? T('social.less') : T('social.all', srcs.length);
+      // When closing, bring the brand back into view so the visitor isn't left far below
+      if (!open) {
+        var top = sec.getBoundingClientRect().top + window.scrollY - 90;
+        window.scrollTo({ top: top, behavior: 'smooth' });
+      }
     };
     sec.appendChild(more);
   }
