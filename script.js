@@ -219,6 +219,16 @@ function render(c) {
   var grid = document.getElementById('portfolioGrid');
   var used = {};
   (c.projects || []).forEach(function (p, i) {
+    // Social Media entry with sections: one block per section (in the dashboard order)
+    if ((p.viewer || 'single') === 'grid' && (p.sections || []).length) {
+      used[p.category] = true;
+      p.sections.forEach(function (sec) {
+        var imgs = (sec.images || []).filter(Boolean);
+        if (!imgs.length) return;
+        addSocialGroup(grid, p, imgs, sec);
+      });
+      return;
+    }
     var images = (p.images || []).filter(Boolean);
     if (!images.length) return;
     var id = 'p' + i, n = images.length, viewer = p.viewer || 'single';
@@ -421,13 +431,14 @@ function renderReviews(list) {
 // Entries that follow each other with the same name share one section; the 2nd+ entry is shown
 // under a small label taken from its subtitle (e.g. Ministry: posts, then "Booklets & reports").
 var LAST_SOCIAL = null;
-function addSocialGroup(grid, p, images) {
-  var name = tr(p, 'title');
+function addSocialGroup(grid, p, images, sec0) {
+  var name = sec0 ? tr(sec0, 'title') : tr(p, 'title');
+  var subLbl = sec0 ? tr(sec0, 'label') : tr(p, 'subtitle');
   var sec, count;
-  if (LAST_SOCIAL && LAST_SOCIAL.name === name && grid.lastElementChild === LAST_SOCIAL.sec) {
+  if (LAST_SOCIAL && LAST_SOCIAL.name === name && grid.lastElementChild === LAST_SOCIAL.sec && (!sec0 || subLbl)) {
     sec = LAST_SOCIAL.sec;
     var lbl = el('div', 'social-sub');
-    lbl.appendChild(el('em', 'social-note', tr(p, 'subtitle') || name));
+    lbl.appendChild(el('em', 'social-note', subLbl || name));
     sec.appendChild(lbl);
     LAST_SOCIAL.total += images.length;
     LAST_SOCIAL.count.textContent = T('count.posts', LAST_SOCIAL.total);

@@ -81,12 +81,9 @@ content:
 
       - name: projects
         label: Portfolio projects
-        description: "The order here is the order on the site. Social Media - each entry is one section on the site; entries right after each other with the same name share a section (the second one appears under its subtitle, e.g. Booklets & reports)."
+        description: The order here is the order on the site. Page/post counts are added automatically.
         type: object
-        list:
-          collapsible:
-            collapsed: true
-            summary: "{title} — {subtitle}"
+        list: true
         fields:
           - { name: title, label: Project name, type: string, required: true }
           - { name: title_ar, label: Project name (Arabic — leave empty to keep the English name), type: string }
@@ -120,6 +117,23 @@ content:
             label: Cover thumbnail (optional — defaults to first image)
             type: image
             options: { media: images }
+          - name: sections
+            label: Social media sections (only for the Social Media project)
+            description: "Each section is a block on the site (Ministry, Jelly Node, Trendx…). Add a design to the section where it should appear. A section with the same name as the one above joins it, under its small label (e.g. Booklets & reports)."
+            type: object
+            list:
+              collapsible:
+                collapsed: true
+                summary: "{title} {label}"
+            fields:
+              - { name: title, label: Section name (brand), type: string, required: true }
+              - { name: title_ar, label: Section name (Arabic — optional), type: string }
+              - { name: label, label: "Small label (optional — e.g. Booklets & reports)", type: string }
+              - { name: label_ar, label: Small label (Arabic), type: string }
+              - name: images
+                label: Designs (in order)
+                type: image
+                options: { media: images, multiple: true }
 
       - name: reviews
         label: Client reviews
