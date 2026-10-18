@@ -81,9 +81,12 @@ content:
 
       - name: projects
         label: Portfolio projects
-        description: The order here is the order on the site. Page/post counts are added automatically.
+        description: "The order here is the order on the site. Social Media - each entry is one section on the site; entries right after each other with the same name share a section (the second one appears under its subtitle, e.g. Booklets & reports)."
         type: object
-        list: true
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{title} — {subtitle}"
         fields:
           - { name: title, label: Project name, type: string, required: true }
           - { name: title_ar, label: Project name (Arabic — leave empty to keep the English name), type: string }

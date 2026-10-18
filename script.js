@@ -235,7 +235,7 @@ function render(c) {
 
     // Social media: one section per brand (taken from the image's folder), real shapes, no cropping
     if (viewer === 'grid') {
-      socialSections(p, images).forEach(function (sec) { grid.appendChild(sec); });
+      addSocialGroup(grid, p, images);
       return;
     }
 
@@ -416,83 +416,35 @@ function renderReviews(list) {
   }
 }
 
-// ===== Social media: grouped by brand folder (images/social/<brand>/...) =====
-// Display names for brand folders. Any other folder name is shown as-is ("my-brand" -> "My Brand").
-var BRAND_NAMES = {
-  'ministry':   { en: 'Ministry of Industry and Mineral Resources', ar: 'وزارة الصناعة والثروة المعدنية' },
-  'jelly-node': { en: 'Jelly Node' },
-  'trendx':     { en: 'Trendx' }
-};
-var BRAND_ALWAYS_OWN = ['ministry'];   // always its own section, even with few designs
-var BRAND_MIN_OWN = 4;                 // brands with fewer designs share the "More work" section
-
-function brandOf(path) {
-  var parts = String(path).split('/').filter(Boolean), i = parts.indexOf('social');
-  return (i > -1 && parts.length - i > 2) ? parts[i + 1] : '';
-}
-function subOf(path) {
-  var parts = String(path).split('/').filter(Boolean), i = parts.indexOf('social');
-  return (i > -1 && parts.length - i > 3) ? parts[i + 2] : '';
-}
-// Sub-folders inside a brand: shown after the main posts, under a small label
-var SUB_LABELS = {
-  'reports': { en: 'Booklets & reports', ar: 'كتيبات وتقارير' }
-};
-function subLabel(sub) {
-  var l = SUB_LABELS[sub];
-  return l ? ((LANG === 'ar' && l.ar) || l.en) : sub.replace(/[-_]+/g, ' ');
-}
-function brandNote(slug) {
-  var n = BRAND_NAMES[slug] && BRAND_NAMES[slug].note;
-  return n ? ((LANG === 'ar' && n.ar) || n.en) : '';
-}
-function brandName(slug) {
-  var b = BRAND_NAMES[slug];
-  if (b) return (LANG === 'ar' && b.ar) || b.en;
-  return slug.replace(/[-_]+/g, ' ').replace(/\b\w/g, function (c) { return c.toUpperCase(); });
-}
-function socialSections(p, images) {
-  var groups = [], bySlug = {};
-  images.forEach(function (path) {
-    var slug = brandOf(path);
-    if (!bySlug[slug]) { bySlug[slug] = { slug: slug, items: [] }; groups.push(bySlug[slug]); }
-    bySlug[slug].items.push(path);
-  });
-  var own = [], small = [];
-  groups.forEach(function (g) {
-    if (g.slug && (g.items.length >= BRAND_MIN_OWN || BRAND_ALWAYS_OWN.indexOf(g.slug) > -1)) own.push(g);
-    else small = small.concat(g.items);
-  });
-  var out = own.map(function (g) { return socialSection(p, brandName(g.slug), g.items, brandNote(g.slug)); });
-  if (small.length) out.push(socialSection(p, T('social.more'), small));
-  return out;
-}
-function socialSection(p, name, paths, note) {
-  var sec = el('div', 'portfolio-item social-section');
-  sec.dataset.cat = p.category;
-  var head = el('div', 'social-head');
-  head.appendChild(el('h3', null, name));
-  if (note) head.appendChild(el('em', 'social-note', note));
-  head.appendChild(el('span', null, T('count.posts', paths.length)));
-  sec.appendChild(head);
-
-  // posts (no sub-folder, or "posts") first; other sub-folders after, each with a label
-  var main = [], subs = [], bySub = {};
-  paths.forEach(function (path) {
-    var sub = subOf(path);
-    if (!sub || sub === 'posts') { main.push(path); return; }
-    if (!bySub[sub]) { bySub[sub] = []; subs.push(sub); }
-    bySub[sub].push(path);
-  });
-  if (main.length) socialWall(sec, name, main);
-  subs.forEach(function (sub) {
+// ===== Social media: one section per dashboard entry =====
+// Each "Social Media" entry in the dashboard is a section on the site (its name = section title).
+// Entries that follow each other with the same name share one section; the 2nd+ entry is shown
+// under a small label taken from its subtitle (e.g. Ministry: posts, then "Booklets & reports").
+var LAST_SOCIAL = null;
+function addSocialGroup(grid, p, images) {
+  var name = tr(p, 'title');
+  var sec, count;
+  if (LAST_SOCIAL && LAST_SOCIAL.name === name && grid.lastElementChild === LAST_SOCIAL.sec) {
+    sec = LAST_SOCIAL.sec;
     var lbl = el('div', 'social-sub');
-    lbl.appendChild(el('em', 'social-note', subLabel(sub)));
+    lbl.appendChild(el('em', 'social-note', tr(p, 'subtitle') || name));
     sec.appendChild(lbl);
-    socialWall(sec, name, bySub[sub]);
-  });
-  return sec;
+    LAST_SOCIAL.total += images.length;
+    LAST_SOCIAL.count.textContent = T('count.posts', LAST_SOCIAL.total);
+  } else {
+    sec = el('div', 'portfolio-item social-section');
+    sec.dataset.cat = p.category;
+    var head = el('div', 'social-head');
+    head.appendChild(el('h3', null, name));
+    count = el('span', null, T('count.posts', images.length));
+    head.appendChild(count);
+    sec.appendChild(head);
+    grid.appendChild(sec);
+    LAST_SOCIAL = { name: name, sec: sec, count: count, total: images.length };
+  }
+  socialWall(sec, name, images);
 }
+
 // Justified rows: every design keeps its real shape; each row is scaled so it fills the full width exactly.
 // Collapsed walls show only the first full rows, with a "Show all" button for the rest.
 var SOCIAL_WALLS = [];

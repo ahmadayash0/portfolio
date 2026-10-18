@@ -174,12 +174,12 @@
       ]
     },
     {
-      "title": "Social Media",
-      "title_ar": "السوشيال ميديا",
-      "subtitle": "Instagram & campaign designs",
-      "subtitle_ar": "تصاميم إنستغرام وحملات إعلانية",
       "category": "social",
       "viewer": "grid",
+      "title": "Ministry of Industry and Mineral Resources",
+      "title_ar": "وزارة الصناعة والثروة المعدنية",
+      "subtitle": "Posts",
+      "subtitle_ar": "منشورات",
       "images": [
         "/images/social/ministry/posts/ministry-post-01.jpg",
         "/images/social/ministry/posts/ministry-post-02.jpg",
@@ -189,9 +189,30 @@
         "/images/social/ministry/posts/ministry-post-06.jpg",
         "/images/social/ministry/posts/ministry-post-07.jpg",
         "/images/social/ministry/posts/ministry-post-08.jpg",
+        "/images/social/ministry/posts/00.jpeg"
+      ]
+    },
+    {
+      "category": "social",
+      "viewer": "grid",
+      "title": "Ministry of Industry and Mineral Resources",
+      "title_ar": "وزارة الصناعة والثروة المعدنية",
+      "subtitle": "Booklets & reports",
+      "subtitle_ar": "كتيبات وتقارير",
+      "images": [
         "/images/social/ministry/reports/ministry-report-01.jpg",
         "/images/social/ministry/reports/ministry-report-02.jpg",
-        "/images/social/ministry/reports/ministry-report-03.jpg",
+        "/images/social/ministry/reports/ministry-report-03.jpg"
+      ]
+    },
+    {
+      "category": "social",
+      "viewer": "grid",
+      "title": "Jelly Node",
+      "title_ar": "",
+      "subtitle": "Social media",
+      "subtitle_ar": "سوشيال ميديا",
+      "images": [
         "/images/social/jelly-node/jelly-node-01.png",
         "/images/social/jelly-node/jelly-node-02.jpg",
         "/images/social/jelly-node/jelly-node-03.jpg",
@@ -205,7 +226,17 @@
         "/images/social/jelly-node/jelly-node-11.jpg",
         "/images/social/jelly-node/jelly-node-12.jpg",
         "/images/social/jelly-node/jelly-node-13.jpg",
-        "/images/social/jelly-node/jelly-node-14.jpg",
+        "/images/social/jelly-node/jelly-node-14.jpg"
+      ]
+    },
+    {
+      "category": "social",
+      "viewer": "grid",
+      "title": "Trendx",
+      "title_ar": "",
+      "subtitle": "Social media",
+      "subtitle_ar": "سوشيال ميديا",
+      "images": [
         "/images/social/trendx/trendx-01.jpg",
         "/images/social/trendx/trendx-02.jpg",
         "/images/social/trendx/trendx-03.jpg",
@@ -227,15 +258,24 @@
         "/images/social/trendx/trendx-19.jpg",
         "/images/social/trendx/trendx-20.jpg",
         "/images/social/trendx/trendx-21.jpg",
-        "/images/social/trendx/trendx-22.png",
+        "/images/social/trendx/trendx-22.png"
+      ]
+    },
+    {
+      "category": "social",
+      "viewer": "grid",
+      "title": "More work",
+      "title_ar": "أعمال أخرى",
+      "subtitle": "Various brands",
+      "subtitle_ar": "علامات متنوعة",
+      "images": [
         "/images/social/social17.png",
         "/images/social/social20.jpg",
         "/images/social/social22.jpg",
         "/images/637157151272097.6308c8ca2281c.jpg",
         "/images/166 copy.jpg",
         "/images/سوشل ميديا 1 جولدن وود.jpg",
-        "/images/البزنس-كارد.jpg",
-        "/images/social/ministry/posts/00.jpeg"
+        "/images/البزنس-كارد.jpg"
       ]
     },
     {
