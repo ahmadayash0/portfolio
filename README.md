@@ -17,6 +17,25 @@ All text, images and projects live in **content.json**. Don't edit the HTML to c
 Anything uploaded here (dashboard or GitHub) can be opened by anyone who has the file's link, even if it isn't added to the site.
 **Never upload confidential designs.** Send those to the client directly (Google Drive link or PDF).
 
+## Share links (to see where visitors come from)
+Use these instead of the plain link. The stats (https://ahmadayash.goatcounter.com) then show **linkedin**, **whatsapp**… under *Referrers*, so you know which one brought the visit.
+
+| Where you post it | Link |
+|---|---|
+| LinkedIn (profile, posts) | `https://ahmadayash.pages.dev/?ref=linkedin` |
+| WhatsApp (chats, status) | `https://ahmadayash.pages.dev/?ref=whatsapp` |
+| Instagram (bio, stories) | `https://ahmadayash.pages.dev/?ref=instagram` |
+| Behance | `https://ahmadayash.pages.dev/?ref=behance` |
+| Facebook | `https://ahmadayash.pages.dev/?ref=facebook` |
+| Email signature | `https://ahmadayash.pages.dev/?ref=email` |
+| CV / PDF | `https://ahmadayash.pages.dev/?ref=cv` |
+| QR code (print, business card) | `https://ahmadayash.pages.dev/?ref=qr` |
+
+- Arabic version: add `lang=ar&` → `https://ahmadayash.pages.dev/?lang=ar&ref=whatsapp`
+- One client: make your own word → `https://ahmadayash.pages.dev/?ref=ministry`
+- Review page: `https://ahmadayash.pages.dev/review.html?ref=whatsapp`
+- Use small English words, no spaces (use `-`): `?ref=client-ali`
+
 ## Adding a project
 Portfolio projects → **Add** → name, subtitle, tab, how it opens, then upload the images in order.
 Page/post counts and the badge are added automatically.
