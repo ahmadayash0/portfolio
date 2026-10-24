@@ -60,7 +60,7 @@
      if (l === 'ar') document.write('<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;700;800&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">');
    })();
   </script>
-  <link href="styles.css?v=20261017x" rel="stylesheet"/>
+  <link href="styles.css?v=20261024a" rel="stylesheet"/>
  </head>
  <body>
   <!-- FLOATING DESIGN ICONS -->
@@ -214,11 +214,9 @@
    </div>
    <!-- flipbook mode -->
    <div class="flipbook-stage" id="flipStage" onclick="event.stopPropagation()">
+    <p class="book-hint" id="bookHint"></p>
     <button class="viewer-nav viewer-prev" aria-label="Previous spread" onclick="flipNav(-1)">&#8249;</button>
-    <div class="flipbook" id="flipbook">
-     <div class="flip-page flip-left"><img id="flipLeft" alt=""/></div>
-     <div class="flip-page flip-right"><img id="flipRight" alt=""/></div>
-    </div>
+    <div class="book-wrap" id="bookWrap"></div>
     <button class="viewer-nav viewer-next" aria-label="Next spread" onclick="flipNav(1)">&#8250;</button>
    </div>
    <!-- scroll mode (identity decks) -->
@@ -234,7 +232,8 @@
 
   <!-- FOOTER -->
   <footer id="footer"></footer>
-  <script src="script.js?v=20261018b"></script>
+  <script src="vendor/page-flip.browser.js"></script>
+  <script src="script.js?v=20261024a"></script>
   <!-- Visitor stats (GoatCounter: free, no cookies). Dashboard: https://ahmadayash.goatcounter.com -->
   <script data-goatcounter="https://ahmadayash.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
  </body>

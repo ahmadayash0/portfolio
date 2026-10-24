@@ -83,6 +83,8 @@ var UI = {
     'c.waMsg': "Hi Ahmad! I saw your portfolio and I'd like to talk about a design project.",
     'c.email': 'Email', 'c.whatsapp': 'WhatsApp', 'c.phone': 'Phone', 'c.mobile': 'Phone', 'c.link': 'Link',
     'rights': 'All Rights Reserved', 'stars': '{n} out of 5 stars',
+    'book.hint': 'Drag a page corner, click a page, or use the arrows',
+    'book.hint.m': 'Swipe or tap the page edge to turn',
     'error': 'Content could not be loaded. (If you opened index.html straight from your computer, use a local server or view the live site.)'
   },
   ar: {
@@ -103,6 +105,8 @@ var UI = {
     'c.waMsg': 'مرحبا أحمد! شفت معرض أعمالك وحابب نحكي عن مشروع تصميم.',
     'c.email': 'البريد الإلكتروني', 'c.whatsapp': 'واتساب', 'c.phone': 'الهاتف', 'c.mobile': 'الجوال', 'c.link': 'رابط',
     'rights': 'جميع الحقوق محفوظة', 'stars': '{n} من 5 نجوم',
+    'book.hint': 'اسحب طرف الصفحة أو اضغط عليها أو استخدم الأسهم',
+    'book.hint.m': 'اسحب أو اضغط على طرف الصفحة لتقليبها',
     'error': 'تعذّر تحميل المحتوى. يرجى المحاولة لاحقًا.'
   }
 };
@@ -750,6 +754,7 @@ function scrollRender() {
 }
 
 function closeViewer() {
+  destroyBook();
   document.getElementById('viewer').classList.remove('active');
   document.body.style.overflow = '';
 }
@@ -769,50 +774,102 @@ function viewerNav(dir) {
   galleryRender();
 }
 
-// ---- flipbook (two-page spread) ----
-// Desktop: cover (page 1) alone on the right, then spreads [2-3],[4-5]...
-//   modeled as: spread 0 = [null, p1]; spread k = [p(2k), p(2k+1)]
-// Mobile (<=600px): single page per view -> [null, p(idx)]
+// ---- flipbook: interactive page-turning book (StPageFlip, vendor/page-flip.browser.js) ----
+// Desktop: two-page spreads with the cover on its own; phones: one page at a time.
+// Pages use the small previews (thumbs/) and load a few pages ahead as you flip.
+var BOOK = null, BOOK_RATIO = 0, BOOK_HIRES = false;
 function isMobileFlip() {
   return window.matchMedia('(max-width: 600px)').matches;
 }
-function flipSpreads() {
-  var imgs = V.images, spreads = [];
-  if (isMobileFlip()) {
-    for (var j = 0; j < imgs.length; j++) spreads.push([null, imgs[j]]);
-    return spreads;
+function destroyBook() {
+  if (BOOK) { try { BOOK.destroy(); } catch (e) {} BOOK = null; }
+  var w = document.getElementById('bookWrap');
+  if (w) w.innerHTML = '';
+}
+function bookLoadAround(i) {
+  if (!BOOK) return;
+  var pages = document.querySelectorAll('#bookWrap .book-page img');
+  for (var k = Math.max(0, i - 2); k <= Math.min(pages.length - 1, i + 5); k++) {
+    var img = pages[k];
+    if (img.dataset.src && !img.getAttribute('src')) {
+      img.onerror = function () { this.onerror = null; this.src = this.dataset.full; };
+      img.src = img.dataset.src;
+    }
+    // sharp version for the pages being read (big screens only)
+    if (BOOK_HIRES && k >= i - 1 && k <= i + 2 && !img.dataset.hi) upgradePage(img);
   }
-  spreads.push([null, imgs[0]]);              // cover on the right
-  for (var i = 1; i < imgs.length; i += 2) {
-    spreads.push([imgs[i], imgs[i+1] || null]);
-  }
-  return spreads;
+}
+function upgradePage(img) {
+  img.dataset.hi = '1';
+  if (img.dataset.full === img.dataset.src) return;
+  var big = new Image();
+  big.onload = function () { img.src = big.src; };
+  big.src = img.dataset.full;
+}
+function bookCounter() {
+  if (!BOOK) return;
+  var n = V.images.length, cur = BOOK.getCurrentPageIndex(), txt;
+  var single = BOOK.getOrientation() === 'portrait' || cur === 0 || (cur === n - 1 && n % 2 === 0);
+  if (single) txt = (cur + 1);
+  else { var l = cur % 2 ? cur : cur - 1; txt = (l + 1) + '–' + Math.min(l + 2, n); }
+  document.getElementById('viewerCounter').textContent = txt + ' / ' + n;
 }
 function flipRender() {
-  var spreads = flipSpreads();
-  if (V.idx < 0) V.idx = 0;
-  if (V.idx >= spreads.length) V.idx = spreads.length - 1;
-  var sp = spreads[V.idx];
-  var L = document.getElementById('flipLeft');
-  var R = document.getElementById('flipRight');
-  var Lp = L.parentElement, Rp = R.parentElement;
-  if (sp[0]) { L.src = sp[0]; Lp.style.visibility = 'visible'; }
-  else { L.removeAttribute('src'); Lp.style.visibility = 'hidden'; }
-  if (sp[1]) { R.src = sp[1]; Rp.style.visibility = 'visible'; }
-  else { R.removeAttribute('src'); Rp.style.visibility = 'hidden'; }
-  // page label
-  var first = sp[0] ? V.images.indexOf(sp[0]) + 1 : (sp[1] ? V.images.indexOf(sp[1]) + 1 : 1);
-  var last  = sp[1] ? V.images.indexOf(sp[1]) + 1 : first;
-  document.getElementById('viewerCounter').textContent =
-    (first === last ? first : first + '–' + last) + ' / ' + V.images.length;
-  [spreads[V.idx + 1], spreads[V.idx - 1]].forEach(function (p) {
-    if (p) p.forEach(function (u) { if (u) { var pre = new Image(); pre.src = u; } });
+  if (typeof St === 'undefined' || !St.PageFlip) return;
+  document.getElementById('bookHint').textContent = T(isMobileFlip() ? 'book.hint.m' : 'book.hint');
+  if (!BOOK_RATIO) {
+    var probe = new Image();
+    probe.onload = function () { BOOK_RATIO = probe.naturalHeight / probe.naturalWidth || 1.414; buildBook(V.idx); };
+    probe.onerror = function () { BOOK_RATIO = 1.414; buildBook(V.idx); };
+    probe.src = previewOf(V.images[0]) || V.images[0];
+    return;
+  }
+  buildBook(V.idx);
+}
+function buildBook(start) {
+  destroyBook();
+  var stage = document.getElementById('flipStage');
+  var wrap = document.getElementById('bookWrap');
+  var cs = getComputedStyle(stage);
+  var navW = 0;
+  stage.querySelectorAll('.viewer-nav').forEach(function (b) { navW += b.offsetWidth; });
+  var availW = stage.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight) - navW - 2 * (parseFloat(cs.columnGap) || 0);
+  var availH = stage.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom) - 28;
+  var portrait = isMobileFlip();
+  var pageW = Math.floor(Math.min(portrait ? availW : availW / 2, availH / BOOK_RATIO));
+  pageW = Math.max(pageW, 120);
+  var pageH = Math.floor(pageW * BOOK_RATIO);
+  BOOK_HIRES = pageW * (window.devicePixelRatio || 1) > 900;
+  var holder = el('div', 'book');
+  holder.style.width = (portrait ? pageW : pageW * 2) + 'px';
+  holder.style.height = pageH + 'px';
+  wrap.appendChild(holder);
+  var n = V.images.length;
+  V.images.forEach(function (src, i) {
+    var pg = el('div', 'book-page');
+    pg.setAttribute('data-density', (i === 0 || i === n - 1) ? 'hard' : 'soft');
+    var img = el('img');
+    img.alt = ''; img.draggable = false;
+    img.dataset.full = src;
+    img.dataset.src = previewOf(src) || src;
+    pg.appendChild(img);
+    holder.appendChild(pg);
   });
+  BOOK = new St.PageFlip(holder, {
+    width: pageW, height: pageH, size: 'fixed',
+    showCover: true, usePortrait: true, autoSize: false,
+    maxShadowOpacity: 0.45, flippingTime: 700,
+    mobileScrollSupport: false, startPage: Math.min(Math.max(start || 0, 0), n - 1)
+  });
+  BOOK.loadFromHTML(holder.querySelectorAll('.book-page'));
+  BOOK.on('flip', function (e) { V.idx = e.data; bookLoadAround(e.data); bookCounter(); });
+  BOOK.on('changeOrientation', bookCounter);
+  bookLoadAround(BOOK.getCurrentPageIndex());
+  bookCounter();
 }
 function flipNav(dir) {
-  var spreads = flipSpreads();
-  V.idx = Math.min(Math.max(V.idx + dir, 0), spreads.length - 1);
-  flipRender();
+  if (!BOOK) return;
+  dir > 0 ? BOOK.flipNext() : BOOK.flipPrev();
 }
 
 // ===== Re-render flipbook on viewport change =====
@@ -821,7 +878,7 @@ window.addEventListener('resize', function(){
   clearTimeout(_rsz);
   _rsz = setTimeout(function(){
     var v = document.getElementById('viewer');
-    if (v.classList.contains('active') && V.kind === 'flipbook') flipRender();
+    if (v.classList.contains('active') && V.kind === 'flipbook') flipRender(); // rebuilds at the current page
   }, 150);
 });
 
@@ -851,7 +908,7 @@ document.addEventListener('keydown', (e) => {
     if (x0 === null) return;
     var dx = e.changedTouches[0].clientX - x0;
     if (Math.abs(dx) > 50) {
-      if (V.kind === 'scroll' || V.kind === 'grid') { x0 = null; return; }
+      if (V.kind === 'scroll' || V.kind === 'grid' || V.kind === 'flipbook') { x0 = null; return; }
       var dir = dx < 0 ? 1 : -1;
       V.kind === 'flipbook' ? flipNav(dir) : (V.images.length>1 && viewerNav(dir));
     }

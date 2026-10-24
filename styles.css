@@ -919,6 +919,27 @@ img[loading="lazy"] { will-change: auto; }
 .flip-left img  { box-shadow: inset -18px 0 30px -18px rgba(0,0,0,0.8); }
 .flip-right img { box-shadow: inset 18px 0 30px -18px rgba(0,0,0,0.8); }
 
+/* interactive book */
+.flipbook-stage { position: relative; }
+.book-wrap { display: flex; align-items: center; justify-content: center; min-width: 0; }
+.book { position: relative; }
+.book-page { background: #111; overflow: hidden; }
+.book-page img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+  user-select: none; -webkit-user-drag: none; pointer-events: none;
+}
+.book .stf__block { filter: drop-shadow(0 18px 40px rgba(0,0,0,0.55)); }
+.book-hint {
+  position: absolute; left: 0; right: 0; bottom: 6px; margin: 0;
+  text-align: center; font-size: 12px; color: rgba(255,255,255,0.45);
+  pointer-events: none;
+}
+
+@media (max-width: 600px) {
+  .flipbook-stage .viewer-nav { display: none; } /* phones: swipe the book instead */
+  .flipbook-stage { padding: 10px; }
+}
+
 /* ===== Viewer responsive ===== */
 @media (max-width: 900px) {
   .viewer-bar { padding: 14px 18px; }
