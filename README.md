@@ -8,6 +8,15 @@ All text, images and projects live in **content.json**. Don't edit the HTML to c
 3. Edit anything (add a project, upload images, change text) and click **Save**.
 4. The live site updates automatically about a minute later.
 
+## Where the site lives
+- Live site: https://ahmadayash.pages.dev/ — published by **Cloudflare Pages** (project `ahmadayash`), not GitHub Pages.
+- Every change saved to this repository (dashboard, GitHub upload, or the robots) goes live automatically about a minute later.
+- Check deploys: https://dash.cloudflare.com → **Workers & Pages** → `ahmadayash` → **Deployments** (a failed deploy keeps the last working version online).
+
+## ⚠️ Privacy rule
+Anything uploaded here (dashboard or GitHub) can be opened by anyone who has the file's link, even if it isn't added to the site.
+**Never upload confidential designs.** Send those to the client directly (Google Drive link or PDF).
+
 ## Adding a project
 Portfolio projects → **Add** → name, subtitle, tab, how it opens, then upload the images in order.
 Page/post counts and the badge are added automatically.
@@ -35,4 +44,4 @@ The site is set up so Google can find it when people search for "Ahmad Ayash", "
 
 ## Link preview
 When the site link is shared on WhatsApp, LinkedIn, Facebook or X, it shows a card with Ahmad's photo, name and title (the image is `assets/og-image.jpg`).
-If an old link shows no picture, send it as `https://ahmadayash0.github.io/portfolio/?v=2` (WhatsApp remembers old previews).
+If an old link shows no picture, send it as `https://ahmadayash.pages.dev/?v=2` (WhatsApp remembers old previews).
