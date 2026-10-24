@@ -774,7 +774,7 @@ function viewerNav(dir) {
   galleryRender();
 }
 
-// ---- flipbook: interactive page-turning book (StPageFlip, vendor/page-flip.browser.js) ----
+// ---- flipbook: interactive page-turning book (StPageFlip, assets/js/page-flip.js) ----
 // Desktop: two-page spreads with the cover on its own; phones: one page at a time.
 // Pages use the small previews (thumbs/) and load a few pages ahead as you flip.
 var BOOK = null, BOOK_RATIO = 0, BOOK_HIRES = false;

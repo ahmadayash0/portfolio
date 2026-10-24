@@ -34,5 +34,5 @@ The site is set up so Google can find it when people search for "Ahmad Ayash", "
 - To get your own access, ask Mona to add you: Settings → Users and permissions → Add user.
 
 ## Link preview
-When the site link is shared on WhatsApp, LinkedIn, Facebook or X, it shows a card with Ahmad's photo, name and title (the image is `og-image.jpg`).
+When the site link is shared on WhatsApp, LinkedIn, Facebook or X, it shows a card with Ahmad's photo, name and title (the image is `assets/og-image.jpg`).
 If an old link shows no picture, send it as `https://ahmadayash0.github.io/portfolio/?v=2` (WhatsApp remembers old previews).
